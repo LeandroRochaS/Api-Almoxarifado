@@ -1,4 +1,6 @@
 ﻿using AlmoxarifadoAPI.Models;
+using AlmoxarifadoServices.ViewModels.ItemRequisicao;
+using AlmoxarifadoServices.ViewModels.Requisicao;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,8 @@ namespace AlmoxarifadoServices.Interfaces
 {
     public interface IGestaoRequisicaoService
     {
-        Task<Requisicao> RegistrarRequisicao(Requisicao requisicao);
+        Task<Requisicao> RegistrarRequisicao(CreateRequisicaoViewModel requisicao);
 
-        Task<ItensReq> RegistrarItemRequisicao(ItensReq itemRequisicao);
+        Task<ItensReq> RegistrarItemRequisicao(int id, CreateItemRequisicaoViewModel itemReq);
     }
 }

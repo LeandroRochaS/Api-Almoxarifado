@@ -2,15 +2,10 @@
 using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
 using AlmoxarifadoServices.ViewModels.NotaFiscal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlmoxarifadoServices.Implementations
 {
-    public class EntradaNotaFiscalService : IGestaoNotaFiscalService
+    public class GestaoNotaFiscalService : IGestaoNotaFiscalService
     {
 
         private readonly IFornecedorService _fornecedorService;
@@ -19,7 +14,7 @@ namespace AlmoxarifadoServices.Implementations
         private readonly IProdutoService _produtoService;
         private readonly IItemNotaService _itemNotaService;
 
-        public EntradaNotaFiscalService(IFornecedorService fornecedorService, ISecretariaService secretariaService, INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IProdutoService produtoService)
+        public GestaoNotaFiscalService(IFornecedorService fornecedorService, ISecretariaService secretariaService, INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IProdutoService produtoService)
         {
             _fornecedorService = fornecedorService;
             _secretariaService = secretariaService;
@@ -35,9 +30,9 @@ namespace AlmoxarifadoServices.Implementations
             try
             {
 
-                if(await ExisteNotaFiscal(id))
+                if (await ExisteNotaFiscal(id))
                 {
-                    if(await VerificarRelacionamentosItem(itemFiscal))
+                    if (await VerificarRelacionamentosItem(itemFiscal))
                     {
 
                         ItensNotum item = new ItensNotum
@@ -58,7 +53,8 @@ namespace AlmoxarifadoServices.Implementations
                 }
 
                 return null;
-            } catch
+            }
+            catch
             {
                 return null;
             }
@@ -92,7 +88,8 @@ namespace AlmoxarifadoServices.Implementations
                 }
 
                 return null;
-            } catch 
+            }
+            catch
             {
                 return null;
             }

@@ -50,7 +50,7 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Requisição não encontrada.");
             }
 
-           return await _requisicaoRepository.Update(entity);
+            return await _requisicaoRepository.Update(entity);
         }
     }
 }
