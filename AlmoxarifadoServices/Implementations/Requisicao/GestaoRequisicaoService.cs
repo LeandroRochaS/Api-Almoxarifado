@@ -14,8 +14,9 @@ namespace AlmoxarifadoServices.Implementations
         private readonly IClienteService _clienteService;
         private readonly ISecretariaService _secretariaService;
         private readonly IProdutoService _produtoService;
+        private readonly IEstoqueService _estoqueService;
 
-        public GestaoRequisicaoService(IItemRequisicaoService itemRequisicaoService, IRequisicaoService requisicaoService, ISetorService setorService, IClienteService clienteService, ISecretariaService secretariaService, IProdutoService produtoService)
+        public GestaoRequisicaoService(IItemRequisicaoService itemRequisicaoService, IRequisicaoService requisicaoService, ISetorService setorService, IClienteService clienteService, ISecretariaService secretariaService, IProdutoService produtoService, IEstoqueService estoqueService)
         {
             _itemRequisicaoService = itemRequisicaoService;
             _requisicaoService = requisicaoService;
@@ -23,6 +24,7 @@ namespace AlmoxarifadoServices.Implementations
             _clienteService = clienteService;
             _secretariaService = secretariaService;
             _produtoService = produtoService;
+            _estoqueService = estoqueService;
         }
 
         public async Task<ItensReq> RegistrarItemRequisicao(int id, CreateItemRequisicaoViewModel itemRequisicaoView)
@@ -46,7 +48,12 @@ namespace AlmoxarifadoServices.Implementations
                             TotalReal = totalItem
                         };
 
-                        return await _itemRequisicaoService.Create(itemRequisicao);
+                        var resultItem = await _itemRequisicaoService.Create(itemRequisicao);
+                        if(resultItem != null)
+                        {
+                            await _estoqueService.RemoverEstoque(itemRequisicao.IdPro, itemRequisicaoView.QtdPro);
+                            return resultItem;
+                        }
                     }
                 }
             } catch

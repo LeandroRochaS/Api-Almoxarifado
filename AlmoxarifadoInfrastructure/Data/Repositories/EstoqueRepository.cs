@@ -34,7 +34,7 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
 
         public async Task<Estoque> GetById(int id)
         {
-            return await _context.Estoques.FindAsync(id);
+            return await _context.Estoques.FirstOrDefaultAsync(x => x.IdPro == id);
         }
 
         public async Task<Estoque> Update(Estoque entity)

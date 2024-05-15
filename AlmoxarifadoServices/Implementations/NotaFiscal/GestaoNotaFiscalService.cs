@@ -13,14 +13,16 @@ namespace AlmoxarifadoServices.Implementations
         private readonly INotaFiscalService _notaFiscalService;
         private readonly IProdutoService _produtoService;
         private readonly IItemNotaService _itemNotaService;
+        private readonly IEstoqueService _estoqueService;
 
-        public GestaoNotaFiscalService(IFornecedorService fornecedorService, ISecretariaService secretariaService, INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IProdutoService produtoService)
+        public GestaoNotaFiscalService(IFornecedorService fornecedorService, ISecretariaService secretariaService, INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IProdutoService produtoService, IEstoqueService estoqueServices)
         {
             _fornecedorService = fornecedorService;
             _secretariaService = secretariaService;
             _notaFiscalService = notaFiscalService;
             _itemNotaService = itemNotaService;
             _produtoService = produtoService;
+            _estoqueService = estoqueServices;
 
 
         }
@@ -47,11 +49,15 @@ namespace AlmoxarifadoServices.Implementations
                             IdNota = id
                         };
 
-                        return await _itemNotaService.Create(item);
+                        var resultItem = await _itemNotaService.Create(item);
+                        if(resultItem != null)
+                        {
+                            var resultEstoque = _estoqueService.AdicionarEstoque(itemFiscal.IdPro, itemFiscal.QtdPro);
+                            return resultItem;
+                        }
                     }
 
                 }
-
                 return null;
             }
             catch
@@ -95,7 +101,6 @@ namespace AlmoxarifadoServices.Implementations
             }
         }
 
-        //IdNum, IdProduto, IdNota, IdSecretaria, QtdProduto, PreçoUnidade, TotalItem, Estoque_Limite = 0
         public async Task<bool> VerificarRelacionamentosNotaFiscal(CreateNotaFiscalViewModel notaFiscal)
         {
             if (notaFiscal.IdFor == 0 || notaFiscal.IdSec == 0)

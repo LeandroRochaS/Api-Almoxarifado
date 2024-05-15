@@ -52,5 +52,29 @@ namespace AlmoxarifadoServices.Implementations
 
             return await _repository.Update(entity);
         }
+
+        public async Task<Estoque> AdicionarEstoque(int id, decimal quantidade)
+        {
+            var estoque = await _repository.GetById(id);
+            if (estoque == null)
+            {
+                throw new ArgumentException("Registro de estoque não encontrado.");
+            }
+
+            estoque.QtdPro += quantidade;
+            return await _repository.Update(estoque);
+        }
+
+        public async Task<Estoque> RemoverEstoque(int id, decimal quantidade)
+        {
+            var estoque = await _repository.GetById(id);
+            if(estoque == null)
+            {
+                throw new ArgumentException("Registro de estoque não encontrado.");
+            }
+
+            estoque.QtdPro -= quantidade;
+            return await _repository.Update(estoque);
+        }
     }
 }

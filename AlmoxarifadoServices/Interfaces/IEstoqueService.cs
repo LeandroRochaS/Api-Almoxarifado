@@ -9,5 +9,8 @@ namespace AlmoxarifadoServices.Interfaces
 {
     public interface IEstoqueService : IServiceBase<Estoque>
     {
+        Task<Estoque> AdicionarEstoque(int id, decimal quantidade);
+
+        Task<Estoque> RemoverEstoque(int id, decimal quantidade);
     }
 }
