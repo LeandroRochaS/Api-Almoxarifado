@@ -4,6 +4,8 @@ using AlmoxarifadoInfrastructure.Data;
 using AlmoxarifadoServices.Implementations;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AlmoxarifadoServices.Implementations.Requisicao;
+using AlmoxarifadoServices.Implementations.NotaFiscal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,11 +55,12 @@ void ServicesDependencies(IServiceCollection services)
     services.AddScoped<ISecretariaService, SecretariaService>();
     services.AddScoped<IUnidadeDeMedidaService, UnidadeDeMedidaService>();
     services.AddScoped<IItemNotaService, ItemNotaService>();
-    services.AddScoped<IGestaoNotaFiscalService, EntradaNotaFiscalService>();
+    services.AddScoped<IGestaoNotaFiscalService, GestaoNotaFiscalService>();
     services.AddScoped<IClienteService, ClienteService>();
     services.AddScoped<ISetorService, SetorService>();
     services.AddScoped<IRequisicaoService, RequisicaoService>();
     services.AddScoped<IItemRequisicaoService, ItemRequisicaoService>();
+    services.AddScoped<IEstoqueService, EstoqueService>();
 }
 
 void RepositoriesDependencies(IServiceCollection services)
@@ -76,4 +79,5 @@ void RepositoriesDependencies(IServiceCollection services)
     services.AddScoped<ISetorRepository, SetorRepository>();    
     services.AddScoped<IItemRequisicaoRepository, ItemRequisicaoRepository>();
     services.AddScoped<IRequisicaoRepository, RequisicaoRepository>();
+    services.AddScoped<IEstoqueRepository,  EstoqueRepository>();
 }
