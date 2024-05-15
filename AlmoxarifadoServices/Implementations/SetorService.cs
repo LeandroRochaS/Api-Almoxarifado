@@ -13,7 +13,7 @@ namespace AlmoxarifadoServices.Implementations
             _repository = repository;
         }
 
-        public async Task<Setor> ObterPorId(int id)
+        public async Task<Setor> GetById(int id)
         {
             return await _repository.GetById(id);
         }
