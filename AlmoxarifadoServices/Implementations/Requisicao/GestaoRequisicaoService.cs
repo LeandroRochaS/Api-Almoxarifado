@@ -3,7 +3,6 @@ using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoServices.ViewModels.ItemRequisicao;
 using AlmoxarifadoServices.ViewModels.Requisicao;
 
-
 namespace AlmoxarifadoServices.Implementations
 {
     public class GestaoRequisicaoService : IGestaoRequisicaoService
@@ -31,34 +30,32 @@ namespace AlmoxarifadoServices.Implementations
         {
             try
             {
-                if(await ExisteRequisicao(id))
+                if (await ExisteRequisicao(id))
                 {
-                    if(await VerificarRelacionamentosItemReq(itemRequisicaoView))
+                    if (await VerificarRelacionamentosItemReq(id, itemRequisicaoView))
                     {
                         decimal totalItem = itemRequisicaoView.QtdPro * itemRequisicaoView.PreUnit;
-                        ItensReq itemRequisicao = new ItensReq
-                        {
-                            IdPro = itemRequisicaoView.IdPro,
-                            IdReq = id,
-                            IdSec = itemRequisicaoView.IdSec,
-                            PreUnit = itemRequisicaoView.PreUnit,
-                            NumItem = itemRequisicaoView.NumItem,
-                            QtdPro = itemRequisicaoView.QtdPro,
-                            TotalItem = totalItem,
-                            TotalReal = totalItem
-                        };
+                        ItensReq itemRequisicao = CriarItemRequisicao(id, itemRequisicaoView, totalItem);
 
-                        var resultItem = await _itemRequisicaoService.Create(itemRequisicao);
-                        if(resultItem != null)
+                        if (await VerificarEstoqueSuficiente(itemRequisicao.IdPro, itemRequisicao.QtdPro))
                         {
-                            await _estoqueService.RemoverEstoque(itemRequisicao.IdPro, itemRequisicaoView.QtdPro);
-                            return resultItem;
+                            var resultItem = await _itemRequisicaoService.Create(itemRequisicao);
+                            if (resultItem != null)
+                            {
+                                await AtualizarEstoque(itemRequisicao.IdPro, itemRequisicaoView.QtdPro);
+                                return resultItem;
+                            }
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Quantidade de produto em estoque insuficiente");
                         }
                     }
                 }
-            } catch
+            }
+            catch (Exception ex)
             {
-                throw new NotImplementedException();
+                throw ex;
             }
             return null;
         }
@@ -67,59 +64,92 @@ namespace AlmoxarifadoServices.Implementations
         {
             try
             {
-                if(await VerificarRelacionamentosRequisicao(requisicaoView))
+                if (await VerificarRelacionamentosRequisicao(requisicaoView))
                 {
-                    Requisicao requisicao = new Requisicao
-                    {
-                        Ano = requisicaoView.Ano,
-                        DataReq = DateTime.Now,
-                        IdCli = requisicaoView.IdCli,
-                        IdSec = requisicaoView.IdSec,
-                        IdSet = requisicaoView.IdSet,
-                        Mes = requisicaoView.Mes,
-                        Observacao = requisicaoView.Observacao,
-                        TotalReq = 0,
-                        QtdIten = 0
-                    };
-
+                    Requisicao requisicao = CriarRequisicao(requisicaoView);
                     return await _requisicaoService.Create(requisicao);
                 }
-            } catch
+            }
+            catch (Exception ex)
             {
-                throw new NotImplementedException();
+                throw ex;
             }
 
             return null;
         }
 
-
         private async Task<bool> VerificarRelacionamentosRequisicao(CreateRequisicaoViewModel requisicao)
         {
-            if(requisicao.IdCli == 0 || requisicao.IdSec == 0 || requisicao.IdSet == 0)
-                return false;
-            
-            if(await _clienteService.GetById(requisicao.IdCli) == null || await _setorService.GetById(requisicao.IdSet) == null || await _secretariaService.GetById(requisicao.IdSec) == null)
-                return false;
-
-            return true;
+            return requisicao.IdCli != 0 &&
+                   requisicao.IdSec != 0 &&
+                   requisicao.IdSet != 0 &&
+                   await _clienteService.GetById(requisicao.IdCli) != null &&
+                   await _setorService.GetById(requisicao.IdSet) != null &&
+                   await _secretariaService.GetById(requisicao.IdSec) != null;
         }
 
-        private async Task<bool> VerificarRelacionamentosItemReq(CreateItemRequisicaoViewModel itemReq)
+        private async Task<bool> VerificarRelacionamentosItemReq(int Idreq, CreateItemRequisicaoViewModel itemReq)
         {
-            if(itemReq.IdPro == 0 || itemReq.IdReq == 0 || itemReq.IdSec == 0)
-                return false;
-            if(await _requisicaoService.GetById(itemReq.IdReq) == null || await _produtoService.GetById(itemReq.IdPro) == null || await _setorService.GetById(itemReq.IdSec) == null)
-                return false;
-
-            return true;
+            return itemReq.IdPro != 0 &&
+                   Idreq != 0 &&
+                   itemReq.IdSec != 0 &&
+                   await _requisicaoService.GetById(Idreq) != null &&
+                   await _produtoService.GetById(itemReq.IdPro) != null &&
+                   await _setorService.GetById(itemReq.IdSec) != null;
         }
 
         private async Task<bool> ExisteRequisicao(int id)
         {
-            if(await _requisicaoService.GetById(id) == null)
+            return await _requisicaoService.GetById(id) != null;
+        }
+
+        public async Task<bool> VerificarEstoqueSuficiente(int IdPro, decimal quantidadeSaida)
+        {
+            var produto = await _produtoService.GetById(IdPro);
+            if (produto == null)
                 return false;
 
-            return true;
+            var estoque = await _estoqueService.GetById(produto.IdPro);
+            if (estoque == null)
+                return false;
+
+            return quantidadeSaida <= estoque.QtdPro;
         }
-    } 
+
+        private async Task AtualizarEstoque(int IdPro, decimal quantidadeSaida)
+        {
+            await _estoqueService.RemoverEstoque(IdPro, quantidadeSaida);
+        }
+
+        private ItensReq CriarItemRequisicao(int id, CreateItemRequisicaoViewModel itemRequisicaoView, decimal totalItem)
+        {
+            return new ItensReq
+            {
+                IdPro = itemRequisicaoView.IdPro,
+                IdReq = id,
+                IdSec = itemRequisicaoView.IdSec,
+                PreUnit = itemRequisicaoView.PreUnit,
+                NumItem = itemRequisicaoView.NumItem,
+                QtdPro = itemRequisicaoView.QtdPro,
+                TotalItem = totalItem,
+                TotalReal = totalItem
+            };
+        }
+
+        private Requisicao CriarRequisicao(CreateRequisicaoViewModel requisicaoView)
+        {
+            return new Requisicao
+            {
+                Ano = requisicaoView.Ano,
+                DataReq = DateTime.Now,
+                IdCli = requisicaoView.IdCli,
+                IdSec = requisicaoView.IdSec,
+                IdSet = requisicaoView.IdSet,
+                Mes = requisicaoView.Mes,
+                Observacao = requisicaoView.Observacao,
+                TotalReq = 0,
+                QtdIten = 0
+            };
+        }
+    }
 }
