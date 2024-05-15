@@ -27,5 +27,16 @@ namespace AlmoxarifadoServices.Implementations
         {
             return await _repository.GetById(id);
         }
+
+        public async Task<NotaFiscal> AdicionarItem(NotaFiscal notaFiscal)
+        {
+            var notaFiscalExistente = await _repository.GetById(notaFiscal.IdNota);
+            if (notaFiscalExistente == null)
+            {
+                throw new ArgumentException("Nota fiscal não encontrada.");
+            }
+            notaFiscal.QtdItem += 1;
+            return await _repository.Update(notaFiscal);
+        }
     }
 }

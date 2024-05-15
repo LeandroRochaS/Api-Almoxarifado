@@ -31,8 +31,8 @@ namespace AlmoxarifadoServices.Implementations
         {
             try
             {
-
-                if (await ExisteNotaFiscal(id))
+                var notaFiscal = await ExisteNotaFiscal(id);
+                if (notaFiscal != null)
                 {
                     if (await VerificarRelacionamentosItem(itemFiscal))
                     {
@@ -52,7 +52,9 @@ namespace AlmoxarifadoServices.Implementations
                         var resultItem = await _itemNotaService.Create(item);
                         if(resultItem != null)
                         {
+                            await _notaFiscalService.AdicionarItem(notaFiscal);
                             var resultEstoque = _estoqueService.AdicionarEstoque(itemFiscal.IdPro, itemFiscal.QtdPro);
+                            
                             return resultItem;
                         }
                     }
@@ -86,7 +88,8 @@ namespace AlmoxarifadoServices.Implementations
                         IdTipoNota = notaFiscalView.IdTipoNota,
                         ObservacaoNota = notaFiscalView.ObservacaoNota,
                         QtdItem = notaFiscalView.QtdItem,
-                        NumNota = notaFiscalView.NumNota
+                        NumNota = notaFiscalView.NumNota,
+                        ValorNota = 0 
                     };
 
 
@@ -133,13 +136,13 @@ namespace AlmoxarifadoServices.Implementations
             return true;
         }
 
-        public async Task<bool> ExisteNotaFiscal(int id)
+        public async Task<NotaFiscal> ExisteNotaFiscal(int id)
         {
             var notaFiscal = await _notaFiscalService.GetNotaFiscalById(id);
             if (notaFiscal == null)
                 throw new ArgumentException("Nota Fiscal não encontrada");
 
-            return true;
+            return notaFiscal;
         }
 
 

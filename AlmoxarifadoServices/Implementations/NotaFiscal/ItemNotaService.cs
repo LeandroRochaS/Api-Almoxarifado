@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AlmoxarifadoServices.Implementations.NotaFiscal
+namespace AlmoxarifadoServices.Implementations
 {
     public class ItemNotaService : IItemNotaService
     {

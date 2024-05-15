@@ -4,8 +4,7 @@ using AlmoxarifadoInfrastructure.Data;
 using AlmoxarifadoServices.Implementations;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using AlmoxarifadoServices.Implementations.Requisicao;
-using AlmoxarifadoServices.Implementations.NotaFiscal;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

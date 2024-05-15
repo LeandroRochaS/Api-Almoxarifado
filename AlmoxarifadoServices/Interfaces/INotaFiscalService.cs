@@ -12,5 +12,7 @@ namespace AlmoxarifadoServices.Interfaces
         Task<NotaFiscal> GetNotaFiscalById(int id);
 
         Task<NotaFiscal> CreateNotaFiscal(NotaFiscal notaFiscal);
+
+        Task<NotaFiscal> AdicionarItem(NotaFiscal notaFiscal);
     }
 }
