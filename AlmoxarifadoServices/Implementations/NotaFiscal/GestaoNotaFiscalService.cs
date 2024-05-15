@@ -55,7 +55,7 @@ namespace AlmoxarifadoServices.Implementations
                             await _notaFiscalService.AdicionarItem(notaFiscal);
                             var resultEstoque = _estoqueService.AdicionarEstoque(itemFiscal.IdPro, itemFiscal.QtdPro);
                             
-                            return resultItem;
+                            return item;
                         }
                     }
 

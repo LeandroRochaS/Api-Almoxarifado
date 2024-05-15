@@ -39,7 +39,7 @@ namespace AlmoxarifadoServices.Implementations
                         ItensReq itemRequisicao = new ItensReq
                         {
                             IdPro = itemRequisicaoView.IdPro,
-                            IdReq = itemRequisicaoView.IdReq,
+                            IdReq = id,
                             IdSec = itemRequisicaoView.IdSec,
                             PreUnit = itemRequisicaoView.PreUnit,
                             NumItem = itemRequisicaoView.NumItem,

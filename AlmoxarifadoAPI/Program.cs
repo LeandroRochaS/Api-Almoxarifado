@@ -60,6 +60,7 @@ void ServicesDependencies(IServiceCollection services)
     services.AddScoped<IRequisicaoService, RequisicaoService>();
     services.AddScoped<IItemRequisicaoService, ItemRequisicaoService>();
     services.AddScoped<IEstoqueService, EstoqueService>();
+    services.AddScoped<IGestaoRequisicaoService, GestaoRequisicaoService>();
 }
 
 void RepositoriesDependencies(IServiceCollection services)

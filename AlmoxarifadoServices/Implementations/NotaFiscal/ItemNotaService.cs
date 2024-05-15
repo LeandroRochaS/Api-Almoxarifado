@@ -45,5 +45,6 @@ namespace AlmoxarifadoServices.Implementations
         {
             return await _repository.Update(entity);
         }
+
     }
 }
