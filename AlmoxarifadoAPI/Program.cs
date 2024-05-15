@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<xAlmoxarifadoContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoSenai")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoHome")));
 
 //Carregando Classes de Repositories
 RepositoriesDependencies(builder.Services);
@@ -56,6 +56,8 @@ void ServicesDependencies(IServiceCollection services)
     services.AddScoped<IGestaoNotaFiscalService, EntradaNotaFiscalService>();
     services.AddScoped<IClienteService, ClienteService>();
     services.AddScoped<ISetorService, SetorService>();
+    services.AddScoped<IRequisicaoService, RequisicaoService>();
+    services.AddScoped<IItemRequisicaoService, ItemRequisicaoService>();
 }
 
 void RepositoriesDependencies(IServiceCollection services)
@@ -72,4 +74,6 @@ void RepositoriesDependencies(IServiceCollection services)
     services.AddScoped<IItemNotaRepository, ItemNotaRepository>();
     services.AddScoped<IClienteRepository, ClienteRepository>();
     services.AddScoped<ISetorRepository, SetorRepository>();    
+    services.AddScoped<IItemRequisicaoRepository, ItemRequisicaoRepository>();
+    services.AddScoped<IRequisicaoRepository, RequisicaoRepository>();
 }
