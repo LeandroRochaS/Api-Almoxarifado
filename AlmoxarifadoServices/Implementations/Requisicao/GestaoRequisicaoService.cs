@@ -1,4 +1,5 @@
 ﻿using AlmoxarifadoAPI.Models;
+using AlmoxarifadoDomain.Models;
 using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoServices.ViewModels.ItemRequisicao;
 using AlmoxarifadoServices.ViewModels.Requisicao;
@@ -14,7 +15,7 @@ namespace AlmoxarifadoServices.Implementations
         private readonly ISecretariaService _secretariaService;
         private readonly IProdutoService _produtoService;
         private readonly IEstoqueService _estoqueService;
-
+ 
         public GestaoRequisicaoService(IItemRequisicaoService itemRequisicaoService, IRequisicaoService requisicaoService, ISetorService setorService, IClienteService clienteService, ISecretariaService secretariaService, IProdutoService produtoService, IEstoqueService estoqueService)
         {
             _itemRequisicaoService = itemRequisicaoService;
@@ -43,6 +44,7 @@ namespace AlmoxarifadoServices.Implementations
                             if (resultItem != null)
                             {
                                 await AtualizarEstoque(itemRequisicao.IdPro, itemRequisicaoView.QtdPro);
+                                await VerificarEstoqueMinimo(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicao.IdReq);
                                 return resultItem;
                             }
                         }
@@ -58,6 +60,24 @@ namespace AlmoxarifadoServices.Implementations
                 throw ex;
             }
             return null;
+        }
+
+        private async Task VerificarEstoqueMinimo(int idPro, int idSec, int idReq)
+        {
+            var produto = await _produtoService.GetById(idPro);
+            var estoqueProduto = await _estoqueService.GetById(idPro);
+            if (estoqueProduto.QtdPro <= produto.EstoqueMin)
+            {
+                LogEstoqueCriticoService.CriarLogCSV(new LogEstoqueMinimo
+                {
+                    IdProduto = idPro,
+                    IdRequisicao = idReq,
+                    IdSecretaria = idSec,
+                    DataRegistro = DateTime.Now,
+                    QuantidadeAtual = estoqueProduto.QtdPro
+                });
+
+            }
         }
 
         public async Task<Requisicao> RegistrarRequisicao(CreateRequisicaoViewModel requisicaoView)
