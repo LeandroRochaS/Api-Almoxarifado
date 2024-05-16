@@ -61,7 +61,7 @@ namespace AlmoxarifadoServices.Implementations
 
                 var notaFiscal = CriarNotaFiscal(notaFiscalView);
 
-                return await _notaFiscalService.CreateNotaFiscal(notaFiscal);
+                return await _notaFiscalService.Create(notaFiscal);
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace AlmoxarifadoServices.Implementations
 
         private async Task<NotaFiscal> ObterNotaFiscalPorId(int id)
         {
-            var notaFiscal = await _notaFiscalService.GetNotaFiscalById(id);
+            var notaFiscal = await _notaFiscalService.GetById(id);
             if (notaFiscal == null)
                 throw new ArgumentException("Nota Fiscal não encontrada");
 

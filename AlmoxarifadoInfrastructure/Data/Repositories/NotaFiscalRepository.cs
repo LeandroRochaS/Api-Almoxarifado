@@ -47,7 +47,7 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             return entity;
         }
 
-        public async Task<IEnumerable<NotaFiscal>> GetAll() => await _context.NotaFiscals.AsNoTracking().ToListAsync();
+        public async Task<IEnumerable<NotaFiscal>> GetAll() => await _context.NotaFiscals.ToListAsync();
 
 
         public async Task<NotaFiscal> GetById(int id)
