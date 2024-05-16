@@ -102,7 +102,6 @@ namespace AlmoxarifadoServices.Implementations
         {
             return await _requisicaoService.GetById(id) != null;
         }
-
         public async Task<bool> VerificarEstoqueSuficiente(int IdPro, decimal quantidadeSaida)
         {
             var produto = await _produtoService.GetById(IdPro);
