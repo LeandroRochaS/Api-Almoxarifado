@@ -14,58 +14,38 @@ namespace AlmoxarifadoAPI.Controllers
     [Route("v1/EntradaFiscal")]
     public class GestaoEntradaController : ControllerBase
     {
-        private readonly IGestaoNotaFiscalService _gestaoService;
+        private readonly INotaFiscalService _notaFiscalService;
+        private readonly IItemNotaService _itemNotaService;
+        private readonly IGestaoNotaFiscalService _gestaoNotaFiscalService;
 
-        public GestaoEntradaController(IGestaoNotaFiscalService gestaoService)
+        public GestaoEntradaController(INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IGestaoNotaFiscalService gestaoNotaFiscalService)
         {
-            _gestaoService = gestaoService;
+            _notaFiscalService = notaFiscalService;
+            _itemNotaService = itemNotaService;
+            _gestaoNotaFiscalService = gestaoNotaFiscalService;
         }
 
-
-   
-
-        [HttpPost("registrar/notafiscal")]
-        public async Task<IActionResult> RegistrarNotaFiscal(CreateNotaFiscalViewModel notaFiscal)
+        [HttpPost]
+        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] CreateNotaFiscalComItensViewModel model)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<CreateNotaFiscalViewModel>(ModelState.GetErrors()));
+            if (model == null || model.NotaFiscal == null || model.Itens == null || model.Itens.Count == 0)
+                return BadRequest("Dados inválidos");
 
             try
             {
-                var notaFiscalRegistrada = await _gestaoService.RegistroDeNotaFiscal(notaFiscal);
-                return Ok(new ResultViewModel<NotaFiscal>(notaFiscalRegistrada));
+                var notaFiscal = await _notaFiscalService.Create(model.NotaFiscal);
+
+                if (notaFiscal == null)
+                    return BadRequest("Erro ao criar nota fiscal");
+
+                var notaFiscalGet = await _gestaoNotaFiscalService.CriarItens(model.Itens, notaFiscal);
+
+                return Ok(notaFiscalGet);
             }
-            catch (DbException)
+            catch (Exception ex)
             {
-                return StatusCode(500, new ResultViewModel<NotaFiscal>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
-            }
-            catch(ArgumentException e)
-            {
-                return BadRequest(new ResultViewModel<NotaFiscal>(e.Message.Normalize()));
+                return BadRequest(new ResultViewModel<string>(ex.Message));
             }
         }
-
-        [HttpPost("registrar/itemfiscal/{id}")]
-        public async Task<IActionResult> RegistrarNotaFiscal(int id, CreateItemNotaFiscaViewModel itemFiscal)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<CreateNotaFiscalViewModel>(ModelState.GetErrors()));
-
-            try
-            {
-                var itemFiscalRegistrado = await _gestaoService.RegistrarItemDeNotaFiscal(id, itemFiscal);
-                return Ok(new ResultViewModel<ItensNotum>(itemFiscalRegistrado));
-            }
-            catch (DbException)
-            {
-                return StatusCode(500, new ResultViewModel<ItensNotum>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(new ResultViewModel<ItensNotum>(e.Message.Normalize()));
-            }
-        }
-
-
     }
 }

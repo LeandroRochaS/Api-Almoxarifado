@@ -9,6 +9,7 @@ using System.Data.Common;
 using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
 using AlmoxarifadoServices.ViewModels.Requisicao;
 using AlmoxarifadoServices.ViewModels.ItemRequisicao;
+using AlmoxarifadoServices.Implementations;
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -17,56 +18,41 @@ namespace AlmoxarifadoAPI.Controllers
     public class GestaoSaidaController : ControllerBase
     {
         private readonly IGestaoRequisicaoService _gestaoService;
+        private readonly IRequisicaoService _requisicaoService;
+      
 
-        public GestaoSaidaController(IGestaoRequisicaoService gestaoService)
+        public GestaoSaidaController(IGestaoRequisicaoService gestaoService, IRequisicaoService requisicaoService)
         {
             _gestaoService = gestaoService;
+            _requisicaoService = requisicaoService;
         }
 
 
-   
 
-        [HttpPost("registrar/requisicao")]
-        public async Task<IActionResult> RegistrarRequisicao(CreateRequisicaoViewModel notaFiscal)
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRequisicaoComitens([FromBody] CreateRequisicaoComItensViewModel model)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<CreateRequisicaoViewModel>(ModelState.GetErrors()));
+            if (model == null || model.Requisicao == null || model.Itens == null || model.Itens.Count == 0)
+                return BadRequest("Dados inválidos");
 
             try
             {
-                var requisicaoRegistrada = await _gestaoService.RegistrarRequisicao(notaFiscal);
-                return Ok(new ResultViewModel<Requisicao>(requisicaoRegistrada));
+                var requisicao = await _requisicaoService.Create(model.Requisicao);
+
+                if (requisicao == null)
+                    return BadRequest(new ResultViewModel<string>("Erro ao criar nota fiscal"));
+
+                var notaFiscalGet = await _gestaoService.CriarItens(model.Itens, requisicao);
+
+                return Ok(notaFiscalGet);
             }
-            catch (DbException)
+            catch (Exception ex)
             {
-                return StatusCode(500, new ResultViewModel<Requisicao>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
-            }
-            catch(ArgumentException e)
-            {
-                return BadRequest(new ResultViewModel<Requisicao>(e.Message.Normalize()));
+                return BadRequest(new ResultViewModel<string>(ex.Message));
             }
         }
 
-        [HttpPost("registrar/itemrequisicao/{id}")]
-        public async Task<IActionResult> RegistrarItemRequisicao(int id, CreateItemRequisicaoViewModel itemReq)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<CreateItemRequisicaoViewModel>(ModelState.GetErrors()));
-
-            try
-            {
-                var itemReqRegistrado = await _gestaoService.RegistrarItemRequisicao(id, itemReq);
-                return Ok(new ResultViewModel<ItensReq>(itemReqRegistrado));
-            }
-            catch (DbException)
-            {
-                return StatusCode(500, new ResultViewModel<ItensReq>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(new ResultViewModel<ItensReq>(e.Message.Normalize()));
-            }
-        }
 
 
     }

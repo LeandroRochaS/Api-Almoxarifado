@@ -64,7 +64,7 @@ namespace AlmoxarifadoAPI.Controllers
                 return BadRequest(new ResultViewModel<ItensReq>(ModelState.GetErrors()));
             try
             {
-                var newRequisicao = await _gestaoReqService.RegistrarItemRequisicao(id, requisicao);
+                var newRequisicao = await _itemService.Create(id, requisicao);
                 return CreatedAtAction(nameof(GetRequisicao), new { id = newRequisicao.IdReq }, new ResultViewModel<ItensReq>(newRequisicao));
             }
             catch (Exception ex)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlmoxarifadoServices.ViewModels.ItemNotaFiscal
 {
-    public class CreateItemNotaFiscaViewModel
+    public class CreateItemNotaFiscalViewModel
     {
 
         public int ItemNum { get; set; }

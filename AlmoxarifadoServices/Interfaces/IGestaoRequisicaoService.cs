@@ -11,8 +11,6 @@ namespace AlmoxarifadoServices.Interfaces
 {
     public interface IGestaoRequisicaoService
     {
-        Task<Requisicao> RegistrarRequisicao(CreateRequisicaoViewModel requisicao);
-
-        Task<ItensReq> RegistrarItemRequisicao(int id, CreateItemRequisicaoViewModel itemReq);
+        Task<GetRequisicaoComItensViewModel> CriarItens(List<CreateItemRequisicaoViewModel> itens, Requisicao model);
     }
 }

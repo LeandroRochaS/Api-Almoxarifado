@@ -15,7 +15,7 @@ namespace AlmoxarifadoServices.Implementations
         {
             // Criação do arquivo CSV
             var dataString = logEstoque.DataRegistro.ToString().Replace("/", "-").Replace("/", "-").Replace(":", "-").Replace(":", "-").Trim();
-            string path = @$"C:\Users\Leandro\Documents\Log\produtosAbaixoMinimoE_{dataString}_{logEstoque.IdRequisicao}.csv";
+            string path = @$"C:\Users\Leandro\Documents\Códigos\Senai\Api-Almoxarifado\Logs\produtosAbaixoMinimoE_{dataString}_{logEstoque.IdRequisicao}.csv";
             using (StreamWriter sw = new StreamWriter(path))
             {
                 // Cabeçalho

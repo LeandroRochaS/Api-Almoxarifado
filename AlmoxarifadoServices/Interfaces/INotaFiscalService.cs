@@ -1,4 +1,5 @@
 ﻿using AlmoxarifadoAPI.Models;
+using AlmoxarifadoServices.ViewModels.NotaFiscal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace AlmoxarifadoServices.Interfaces
     {
         Task<NotaFiscal> GetById(int id);
 
-        Task<NotaFiscal> Create(NotaFiscal notaFiscal);
+        Task<NotaFiscal> Create(CreateNotaFiscalViewModel notaFiscal);
 
         Task<IEnumerable<NotaFiscal>> GetAll();
         Task<NotaFiscal> Delete(int id);

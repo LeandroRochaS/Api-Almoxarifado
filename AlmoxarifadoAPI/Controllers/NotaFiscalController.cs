@@ -2,6 +2,7 @@
 using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoServices.ViewModels;
+using AlmoxarifadoServices.ViewModels.NotaFiscal;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlmoxarifadoAPI.Controllers
@@ -55,7 +56,7 @@ namespace AlmoxarifadoAPI.Controllers
 
         // POST: api/NotaFiscal
         [HttpPost]
-        public async Task<IActionResult> PostNotaFiscal([FromBody] NotaFiscal notaFiscal)
+        public async Task<IActionResult> PostNotaFiscal([FromBody] CreateNotaFiscalViewModel notaFiscal)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<NotaFiscal>(ModelState.GetErrors()));

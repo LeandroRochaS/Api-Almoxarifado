@@ -65,13 +65,13 @@ namespace AlmoxarifadoAPI.Controllers
 
         // POST: api/ItemNotaFiscal
         [HttpPost("{id}")]
-        public async Task<IActionResult> PostItemNotaFiscal(int id, [FromBody] CreateItemNotaFiscaViewModel item)
+        public async Task<IActionResult> PostItemNotaFiscal(int id, [FromBody] CreateItemNotaFiscalViewModel item)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<ItensNotum>(ModelState.GetErrors()));
             try
             {
-                var newItem = await _gestaoNotaFiscalService.RegistrarItemDeNotaFiscal(id, item);
+                var newItem = await _itemNotaService.Create(id, item);
                 return CreatedAtAction(nameof(GetItemNotaFiscal), new { id = newItem.IdNota }, new ResultViewModel<ItensNotum>(newItem));
             }
             catch (Exception ex)
