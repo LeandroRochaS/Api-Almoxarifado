@@ -1,6 +1,7 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
 using AlmoxarifadoServices.ViewModels.NotaFiscal;
+using AlmoxarifadoServices.ViewModels.Requisicao;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,6 @@ namespace AlmoxarifadoServices.Interfaces
 {
     public interface IGestaoNotaFiscalService
     {
-        Task<NotaFiscal> RegistroDeNotaFiscal(CreateNotaFiscalViewModel notaFiscal);
-        Task<ItensNotum> RegistrarItemDeNotaFiscal(int id, CreateItemNotaFiscaViewModel itemFiscal);
+        Task<GetNotaFiscalComItensViewModel> CriarItens(List<CreateItemNotaFiscalViewModel> itens, NotaFiscal notaFiscal);
     }
 }

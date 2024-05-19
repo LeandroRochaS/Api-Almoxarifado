@@ -38,7 +38,7 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
 
         public async Task<Requisicao> GetById(int id)
         {
-            return await _context.Requisicaos.FindAsync(id);
+            return await _context.Requisicaos.FirstOrDefaultAsync(x => x.IdReq == id);
         }
 
         public async Task<Requisicao> Update(Requisicao entity)

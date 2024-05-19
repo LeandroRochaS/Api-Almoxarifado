@@ -19,6 +19,20 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             _context = pContext;
         }
 
+        public async Task<NotaFiscal> AtualizarValorDaNota(NotaFiscal notaFiscald)
+        {
+            decimal? total = 0;
+            NotaFiscal notaFiscal = await _context.NotaFiscals.Include(x => x.ItensNota).FirstOrDefaultAsync(x => x.IdNota == notaFiscald.IdNota);
+            var listItens = notaFiscal.ItensNota;
+            foreach(ItensNotum item in listItens)
+            {
+                total += item.TotalItem;
+            }
+
+            notaFiscal.ValorNota = (decimal)total;
+            return await Update(notaFiscal);
+        }
+
         public async Task<NotaFiscal> Create(NotaFiscal entity)
         {
             _context.NotaFiscals.Add(entity);
@@ -33,7 +47,7 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             return entity;
         }
 
-        public async Task<IEnumerable<NotaFiscal>> GetAll() => await _context.NotaFiscals.AsNoTracking().ToListAsync();
+        public async Task<IEnumerable<NotaFiscal>> GetAll() => await _context.NotaFiscals.ToListAsync();
 
 
         public async Task<NotaFiscal> GetById(int id)
