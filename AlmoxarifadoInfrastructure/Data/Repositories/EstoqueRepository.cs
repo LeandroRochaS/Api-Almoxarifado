@@ -32,9 +32,9 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             return await _context.Estoques.ToListAsync();
         }
 
-        public async Task<Estoque> GetById(int id)
+        public async Task<Estoque> GetById(int id, int idSec)
         {
-            return await _context.Estoques.FirstOrDefaultAsync(x => x.IdPro == id);
+            return await _context.Estoques.FirstOrDefaultAsync(x => x.IdPro == id && x.IdSec == idSec);
         }
 
         public async Task<Estoque> Update(Estoque entity)

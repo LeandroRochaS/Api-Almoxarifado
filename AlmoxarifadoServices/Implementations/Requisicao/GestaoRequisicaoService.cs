@@ -16,8 +16,7 @@ namespace AlmoxarifadoServices.Implementations
         {
             _itemRequisicaoService = itemRequisicaoService;
         }
-
-       
+    
         public async Task<GetRequisicaoComItensViewModel> CriarItens(List<CreateItemRequisicaoViewModel> itens, Requisicao model)
         {
             try
@@ -49,11 +48,5 @@ namespace AlmoxarifadoServices.Implementations
                 throw new Exception(ex.Message);
             }
         }
-
-
-
-
-
-
     }
 }

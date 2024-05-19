@@ -1,6 +1,7 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.Interfaces;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace AlmoxarifadoServices.Implementations
             return await _repository.Create(entity);
         }
 
-        public async Task<Estoque> Delete(int id)
+        public async Task<Estoque> Delete(int id, int idSec)
         {
-            var estoque = await _repository.GetById(id);
+            var estoque = await _repository.GetById(id, idSec);
             if (estoque == null)
             {
                 throw new ArgumentException("Registro de estoque não encontrado.");
@@ -37,14 +38,14 @@ namespace AlmoxarifadoServices.Implementations
             return await _repository.GetAll();
         }
 
-        public async Task<Estoque> GetById(int id)
+        public async Task<Estoque> GetById(int id, int idSec)
         {
-            return await _repository.GetById(id);
+            return await _repository.GetById(id, idSec);
         }
 
         public async Task<Estoque> Update(int id, Estoque entity)
         {
-            var estoque = await _repository.GetById(id);
+            var estoque = await _repository.GetById(id, entity.IdSec);
             if (estoque == null)
             {
                 throw new ArgumentException("Registro de estoque não encontrado.");
@@ -53,9 +54,9 @@ namespace AlmoxarifadoServices.Implementations
             return await _repository.Update(entity);
         }
 
-        public async Task<Estoque> AdicionarEstoque(int id, decimal quantidade)
+        public async Task<Estoque> AdicionarEstoque(int id, int idSec, decimal quantidade)
         {
-            var estoque = await _repository.GetById(id);
+            var estoque = await _repository.GetById(id, idSec);
             if (estoque == null)
             {
                 throw new ArgumentException("Registro de estoque não encontrado.");
@@ -65,9 +66,9 @@ namespace AlmoxarifadoServices.Implementations
             return await _repository.Update(estoque);
         }
 
-        public async Task<Estoque> RemoverEstoque(int id, decimal quantidade)
+        public async Task<Estoque> RemoverEstoque(int id, int idSec, decimal quantidade)
         {
-            var estoque = await _repository.GetById(id);
+            var estoque = await _repository.GetById(id, idSec);
             if(estoque == null)
             {
                 throw new ArgumentException("Registro de estoque não encontrado.");

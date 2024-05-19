@@ -14,7 +14,7 @@ namespace AlmoxarifadoServices.Implementations
         private readonly INotaFiscalService _notaFiscalService;
         private readonly IProdutoService _produtoService;
         private readonly IItemNotaService _itemNotaService;
-
+        private readonly IEstoqueService _estoqueService;
         public GestaoNotaFiscalService(IFornecedorService fornecedorService, ISecretariaService secretariaService, INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IProdutoService produtoService, IEstoqueService estoqueService)
         {
             _fornecedorService = fornecedorService;

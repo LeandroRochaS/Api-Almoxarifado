@@ -1,4 +1,4 @@
-﻿using AlmoxarifadoAPI.Models;
+﻿ using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoServices.ViewModels.Requisicao;

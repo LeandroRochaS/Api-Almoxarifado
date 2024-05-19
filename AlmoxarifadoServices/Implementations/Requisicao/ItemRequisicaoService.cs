@@ -3,9 +3,7 @@ using AlmoxarifadoDomain.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoServices.ViewModels.ItemRequisicao;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -40,12 +38,12 @@ namespace AlmoxarifadoServices.Implementations
                         decimal totalItem = itemRequisicaoView.QtdPro * itemRequisicaoView.PreUnit;
                         ItensReq itemRequisicao = CriarItemRequisicao(id, itemRequisicaoView, totalItem);
 
-                        if (await VerificarEstoqueSuficiente(itemRequisicao.IdPro, itemRequisicao.QtdPro))
+                        if (await VerificarEstoqueSuficiente(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicao.QtdPro))
                         {
                             var resultItem = await _itemRequisicaoRepository.Create(itemRequisicao);
                             if (resultItem != null)
                             {
-                                await AtualizarEstoque(itemRequisicao.IdPro, itemRequisicaoView.QtdPro);
+                                await AtualizarEstoque(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicaoView.QtdPro);
                                 await VerificarEstoqueMinimo(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicao.IdReq);
                                 return resultItem;
                             }
@@ -99,7 +97,7 @@ namespace AlmoxarifadoServices.Implementations
         private async Task VerificarEstoqueMinimo(int idPro, int idSec, int idReq)
         {
             var produto = await _produtoService.GetById(idPro);
-            var estoqueProduto = await _estoqueService.GetById(idPro);
+            var estoqueProduto = await _estoqueService.GetById(idPro, idSec);
             if (estoqueProduto.QtdPro <= produto.EstoqueMin)
             {
                 LogEstoqueCriticoService.CriarLogCSV(new LogEstoqueMinimo
@@ -144,18 +142,18 @@ namespace AlmoxarifadoServices.Implementations
             };
         }
 
-        private async Task AtualizarEstoque(int IdPro, decimal quantidadeSaida)
+        private async Task AtualizarEstoque(int IdPro,int IdSec, decimal quantidadeSaida)
         {
-            await _estoqueService.RemoverEstoque(IdPro, quantidadeSaida);
+            await _estoqueService.RemoverEstoque(IdPro, IdSec, quantidadeSaida);
         }
 
-        public async Task<bool> VerificarEstoqueSuficiente(int IdPro, decimal quantidadeSaida)
+        public async Task<bool> VerificarEstoqueSuficiente(int IdPro, int IdSec, decimal quantidadeSaida)
         {
             var produto = await _produtoService.GetById(IdPro);
             if (produto == null)
                 return false;
 
-            var estoque = await _estoqueService.GetById(produto.IdPro);
+            var estoque = await _estoqueService.GetById(produto.IdPro, IdSec);
             if (estoque == null)
                 return false;
 

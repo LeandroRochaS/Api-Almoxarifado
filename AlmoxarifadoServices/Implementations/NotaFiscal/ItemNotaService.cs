@@ -40,7 +40,7 @@ namespace AlmoxarifadoServices.Implementations
                     var resultItem = await _repository.Create(item);
                     if (resultItem != null)
                     {
-                        await AtualizarEstoque(itemFiscal.IdPro, itemFiscal.QtdPro);
+                        await AtualizarEstoque(itemFiscal.IdPro, itemFiscal.IdPro, itemFiscal.QtdPro);
                         await _notaFiscalService.AdicionarItem(notaFiscal);
                         return item;
                     }
@@ -135,9 +135,9 @@ namespace AlmoxarifadoServices.Implementations
 
 
 
-        private async Task AtualizarEstoque(int IdPro, decimal quantidadeSaida)
+        private async Task AtualizarEstoque(int IdPro, int IdSec, decimal quantidadeSaida)
         {
-            await _estoqueService.AdicionarEstoque(IdPro, quantidadeSaida);
+            await _estoqueService.AdicionarEstoque(IdPro, IdSec, quantidadeSaida);
         }
 
     }
