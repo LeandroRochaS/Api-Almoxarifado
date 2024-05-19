@@ -9,8 +9,14 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<xAlmoxarifadoContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoHome")));
+
+builder.Services.AddSingleton<IDbConnectionService, DbConnectionService>();
+
+builder.Services.AddDbContext<xAlmoxarifadoContext>((service, options) =>
+{
+    var dbConnection = service.GetRequiredService<IDbConnectionService>();
+    options.UseSqlServer(dbConnection.GetConnectionString());
+});
 
 //Carregando Classes de Repositories
 RepositoriesDependencies(builder.Services);
