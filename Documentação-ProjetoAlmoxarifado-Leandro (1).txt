@@ -1,0 +1,41 @@
+Numeros para testes:
+Fornecedor : 1, 10
+Secretaria: 1, 2
+TipoNota: 1
+
+
+
+
+No banco de dados as tabelas responsáveis pelas as entradas são:
+NOTA_FISCA e ITENS_NOTA. 
+
+Nota Fiscal:
+IdNota, IdFornecedor, IdSecretaria, NumeroNota, ValorNota, QtdItem, ICMS = 0, ISS = 0, Ano, Mes, DataNota, IdTipoNota, ObservaçãoNota, Empenho = 0
+
+Item Nota :
+IdNum, IdProduto, IdNota, IdSecretaria, QtdProduto, PreçoUnidade, TotalItem, Estoque_Limite = 0
+
+Produto: 
+IdProduto, IdClasse, IdUnidadeMedida, Descricao, Observacao, EstoqueMinimo, Perecivel, QuantidadeEmbalagem
+
+Até aqui vou precisar de implementar algumas consultas como Secretaria, Fornecedor, TipoDeNota, Classe, Unidade Medida
+
+
+
+Já para a saída temos: 
+ITENS_REQ E REQUISICAO
+
+
+Requisição:
+IdRequisição, IdCliente, TotalRequisicao, QtdItem , DataRequisicao, Ano, Mes, IdSecretaria, IdSetor, Observação
+
+Itens Requisição:
+NumItem, IdProduto, IdRequisição, IdSecretaria, QtdProduto, PreçoUnidade, TotalItem, TotalReal
+
+Vou precisar de Implementar Setor, Cliente
+
+Entrega 02:
+
+Atualizar estoque 
+
+
