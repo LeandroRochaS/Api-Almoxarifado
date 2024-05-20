@@ -18,7 +18,7 @@ builder.Services.AddDbContext<xAlmoxarifadoContext>((service, options) =>
     var dbConnection = service.GetRequiredService<IDbConnectionService>();
     options.UseSqlServer(dbConnection.GetConnectionString());
 });
-
+builder.Services.AddAutoMapper(typeof(Program));
 //Carregando Classes de Repositories
 RepositoriesDependencies(builder.Services);
 ServicesDependencies(builder.Services);
