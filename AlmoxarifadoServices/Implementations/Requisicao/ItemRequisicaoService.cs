@@ -1,15 +1,22 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoDomain.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
+<<<<<<< HEAD
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
+=======
+using AlmoxarifadoServices.Interfaces;
+using AlmoxarifadoServices.ViewModels.ItemRequisicao;
+using System.Collections.Generic;
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
 
 namespace AlmoxarifadoServices.Implementations
 {
     public class ItemRequisicaoService : IItemRequisicaoService
     {
         private readonly IItemRequisicaoRepository _itemRequisicaoRepository;
+<<<<<<< HEAD
         private readonly MapperConfiguration configurationMapper;
         private readonly IRequisicaoService _requisicaoService;
         private readonly IProdutoService _produtoService;
@@ -26,10 +33,22 @@ namespace AlmoxarifadoServices.Implementations
                 cfg.CreateMap<ItemRequisicaoGetDTO,ItensReq>();
             });
             _mapper = configurationMapper.CreateMapper();
+=======
+        private readonly IRequisicaoService _requisicaoService;
+        private readonly IProdutoService _produtoService;
+        private readonly IEstoqueService _estoqueService;
+        private readonly ISetorService _setorService;
+
+
+        public ItemRequisicaoService(IItemRequisicaoRepository itemRequisicaoRepository, IRequisicaoService requisicaoService, IProdutoService produtoService, IEstoqueService estoqueService, ISetorService setorService)
+        {
+            _itemRequisicaoRepository = itemRequisicaoRepository;
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             _requisicaoService = requisicaoService;
             _produtoService = produtoService;
             _estoqueService = estoqueService;
             _setorService = setorService;
+<<<<<<< HEAD
         }
 
         public async Task<ItemRequisicaoGetDTO> Create(int id, ItemRequisicaoPostDTO itemRequisicaoView)
@@ -54,6 +73,37 @@ namespace AlmoxarifadoServices.Implementations
                     else
                     {
                         throw new InvalidOperationException("Quantidade de produto em estoque insuficiente");
+=======
+
+        }
+
+        public async Task<ItensReq> Create(int id, CreateItemRequisicaoViewModel itemRequisicaoView)
+        {
+
+            try
+            {
+                if (await ExisteRequisicao(id))
+                {
+                    if (await VerificarRelacionamentosItemReq(id, itemRequisicaoView))
+                    {
+                        decimal totalItem = itemRequisicaoView.QtdPro * itemRequisicaoView.PreUnit;
+                        ItensReq itemRequisicao = CriarItemRequisicao(id, itemRequisicaoView, totalItem);
+
+                        if (await VerificarEstoqueSuficiente(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicao.QtdPro))
+                        {
+                            var resultItem = await _itemRequisicaoRepository.Create(itemRequisicao);
+                            if (resultItem != null)
+                            {
+                                await AtualizarEstoque(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicaoView.QtdPro);
+                                await VerificarEstoqueMinimo(itemRequisicao.IdPro, itemRequisicao.IdSec, itemRequisicao.IdReq);
+                                return resultItem;
+                            }
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Quantidade de produto em estoque insuficiente");
+                        }
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
                     }
                 }
             }
@@ -62,9 +112,15 @@ namespace AlmoxarifadoServices.Implementations
                 throw ex;
             }
             return null;
+<<<<<<< HEAD
         }
 
         public async Task<ItemRequisicaoGetDTO> Delete(int id)
+=======
+
+        }
+        public async Task<ItensReq> Delete(int id)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             var itemRequisicao = await _itemRequisicaoRepository.GetById(id);
             if (itemRequisicao == null)
@@ -72,6 +128,7 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Item de requisição não encontrado.");
             }
 
+<<<<<<< HEAD
             return _mapper.Map<ItemRequisicaoGetDTO>(await _itemRequisicaoRepository.Delete(itemRequisicao));
         }
 
@@ -88,6 +145,22 @@ namespace AlmoxarifadoServices.Implementations
         }
 
         public async Task<ItemRequisicaoGetDTO> Update(int id, ItemRequisicaoPutDTO entity)
+=======
+            return await _itemRequisicaoRepository.Delete(itemRequisicao);
+        }
+
+        public async Task<IEnumerable<ItensReq>> GetAll()
+        {
+            return await _itemRequisicaoRepository.GetAll();
+        }
+
+        public async Task<ItensReq> GetById(int id)
+        {
+            return await _itemRequisicaoRepository.GetById(id);
+        }
+
+        public async Task<ItensReq> Update(int id, ItensReq entity)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             var itemRequisicao = await _itemRequisicaoRepository.GetById(id);
             if (itemRequisicao == null)
@@ -95,11 +168,15 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Item de requisição não encontrado.");
             }
 
+<<<<<<< HEAD
             var updatedItem = _mapper.Map(entity, itemRequisicao);
             updatedItem.TotalItem = updatedItem.QtdPro * updatedItem.PreUnit;
             updatedItem.TotalReal = updatedItem.TotalItem;
             var result = await _itemRequisicaoRepository.Update(updatedItem);
             return _mapper.Map<ItemRequisicaoGetDTO>(result);
+=======
+            return await _itemRequisicaoRepository.Update(entity);
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         }
 
         private async Task VerificarEstoqueMinimo(int idPro, int idSec, int idReq)
@@ -120,7 +197,11 @@ namespace AlmoxarifadoServices.Implementations
             }
         }
 
+<<<<<<< HEAD
         private async Task<bool> VerificarRelacionamentosItemReq(int Idreq, ItemRequisicaoPostDTO itemReq)
+=======
+        private async Task<bool> VerificarRelacionamentosItemReq(int Idreq, CreateItemRequisicaoViewModel itemReq)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             return itemReq.IdPro != 0 &&
                    Idreq != 0 &&
@@ -135,7 +216,11 @@ namespace AlmoxarifadoServices.Implementations
             return await _requisicaoService.GetById(id) != null;
         }
 
+<<<<<<< HEAD
         private ItensReq CriarItemRequisicao(int id, ItemRequisicaoPostDTO itemRequisicaoView, decimal totalItem)
+=======
+        private ItensReq CriarItemRequisicao(int id, CreateItemRequisicaoViewModel itemRequisicaoView, decimal totalItem)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             return new ItensReq
             {
@@ -150,7 +235,11 @@ namespace AlmoxarifadoServices.Implementations
             };
         }
 
+<<<<<<< HEAD
         private async Task AtualizarEstoque(int IdPro, int IdSec, decimal quantidadeSaida)
+=======
+        private async Task AtualizarEstoque(int IdPro,int IdSec, decimal quantidadeSaida)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             await _estoqueService.RemoverEstoque(IdPro, IdSec, quantidadeSaida);
         }
@@ -167,5 +256,10 @@ namespace AlmoxarifadoServices.Implementations
 
             return quantidadeSaida <= estoque.QtdPro;
         }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
     }
 }

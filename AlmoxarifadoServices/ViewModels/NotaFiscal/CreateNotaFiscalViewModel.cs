@@ -11,7 +11,6 @@ namespace AlmoxarifadoServices.ViewModels.NotaFiscal
         public int IdFor { get; set; }
         public int IdSec { get; set; }
         public string NumNota { get; set; } = null!;
-        public decimal ValorNota { get; set; }
         public int QtdItem { get; set; }
         public int Ano { get; set; }
         public int? Mes { get; set; }

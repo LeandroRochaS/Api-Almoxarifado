@@ -9,7 +9,7 @@ namespace AlmoxarifadoServices.Interfaces
 {
     public interface IClienteService
     {
-        Task<Cliente> ObterPorId(int id);
+        Task<Cliente> GetById(int id);
 
     }
 }

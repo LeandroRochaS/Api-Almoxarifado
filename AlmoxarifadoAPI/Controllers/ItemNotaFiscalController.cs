@@ -1,8 +1,19 @@
 ﻿using AlmoxarifadoAPI.Extensions;
 using AlmoxarifadoAPI.Models;
+<<<<<<< HEAD
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+=======
+using AlmoxarifadoServices.Interfaces;
+using AlmoxarifadoServices.ViewModels;
+using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -29,7 +40,11 @@ namespace AlmoxarifadoAPI.Controllers
 
                 var paginatedItens = itens.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
+<<<<<<< HEAD
                 return Ok(new ResultViewModel<IEnumerable<ItemNotaFiscalGetDTO>>(paginatedItens));
+=======
+                return Ok(new ResultViewModel<IEnumerable<ItensNotum>>(paginatedItens));
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             }
             catch (Exception ex)
             {
@@ -50,7 +65,11 @@ namespace AlmoxarifadoAPI.Controllers
                 {
                     return NotFound(new ResultViewModel<string>("Item de nota fiscal não encontrado."));
                 }
+<<<<<<< HEAD
                 return Ok(new ResultViewModel<ItemNotaFiscalGetDTO>(item));
+=======
+                return Ok(new ResultViewModel<ItensNotum>(item));
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             }
             catch (Exception ex)
             {
@@ -60,14 +79,22 @@ namespace AlmoxarifadoAPI.Controllers
 
         // POST: api/ItemNotaFiscal
         [HttpPost("{id}")]
+<<<<<<< HEAD
         public async Task<IActionResult> PostItemNotaFiscal(int id, [FromBody] ItemNotaFiscalPostDTO item)
+=======
+        public async Task<IActionResult> PostItemNotaFiscal(int id, [FromBody] CreateItemNotaFiscalViewModel item)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<ItensNotum>(ModelState.GetErrors()));
             try
             {
                 var newItem = await _itemNotaService.Create(id, item);
+<<<<<<< HEAD
                 return CreatedAtAction(nameof(GetItemNotaFiscal), new { id = newItem.IdNota }, new ResultViewModel<ItemNotaFiscalGetDTO>(newItem));
+=======
+                return CreatedAtAction(nameof(GetItemNotaFiscal), new { id = newItem.IdNota }, new ResultViewModel<ItensNotum>(newItem));
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             }
             catch (Exception ex)
             {
@@ -77,7 +104,11 @@ namespace AlmoxarifadoAPI.Controllers
 
         // PUT: api/ItemNotaFiscal/5
         [HttpPut("{id}")]
+<<<<<<< HEAD
         public async Task<IActionResult> PutItemNotaFiscal(int id, [FromBody] ItemNotaFiscalPutDTO item)
+=======
+        public async Task<IActionResult> PutItemNotaFiscal(int id, [FromBody] ItensNotum item)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             if (!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<ItensNotum>(ModelState.GetErrors()));
@@ -88,7 +119,11 @@ namespace AlmoxarifadoAPI.Controllers
                 {
                     return NotFound(new ResultViewModel<string>("Item de nota fiscal não encontrado."));
                 }
+<<<<<<< HEAD
                 return Ok(new ResultViewModel<ItemNotaFiscalGetDTO>(updatedItem));
+=======
+                return Ok(new ResultViewModel<ItensNotum>(updatedItem));
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             }
             catch (Exception ex)
             {

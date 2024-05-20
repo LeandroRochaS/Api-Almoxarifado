@@ -29,5 +29,8 @@ namespace AlmoxarifadoAPI.Models
         public virtual Secretarium IdSecNavigation { get; set; } = null!;
         public virtual TipoNotum IdTipoNotaNavigation { get; set; } = null!;
         public virtual ICollection<ItensNotum> ItensNota { get; set; }
+
+
+        
     }
 }

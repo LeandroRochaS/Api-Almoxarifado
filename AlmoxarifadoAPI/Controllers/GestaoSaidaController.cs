@@ -8,9 +8,15 @@ using AlmoxarifadoServices.ViewModels.Produto;
 using AlmoxarifadoServices.ViewModels.NotaFiscal;
 using System.Data.Common;
 using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
+<<<<<<< HEAD
 =======
 using AlmoxarifadoServices.DTO;
 >>>>>>> Stashed changes
+=======
+using AlmoxarifadoServices.ViewModels.Requisicao;
+using AlmoxarifadoServices.ViewModels.ItemRequisicao;
+using AlmoxarifadoServices.Implementations;
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -18,16 +24,19 @@ namespace AlmoxarifadoAPI.Controllers
     [Route("v1/SaidaFiscal")]
     public class GestaoSaidaController : ControllerBase
     {
-        private readonly IGestaoNotaFiscalService _gestaoService;
+        private readonly IGestaoRequisicaoService _gestaoService;
+        private readonly IRequisicaoService _requisicaoService;
+      
 
-        public GestaoSaidaController(IGestaoNotaFiscalService gestaoService)
+        public GestaoSaidaController(IGestaoRequisicaoService gestaoService, IRequisicaoService requisicaoService)
         {
             _gestaoService = gestaoService;
+            _requisicaoService = requisicaoService;
         }
 
 
-   
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         [HttpPost("registrar/requisicao")]
         public async Task<IActionResult> RegistrarRequisicao(CreateNotaFiscalViewModel notaFiscal)
@@ -36,45 +45,32 @@ namespace AlmoxarifadoAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRequisicaoComitens([FromBody] RequisicaoComItensPostDTO model)
 >>>>>>> Stashed changes
+=======
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRequisicaoComitens([FromBody] CreateRequisicaoComItensViewModel model)
+>>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
-            if(!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<CreateNotaFiscalViewModel>(ModelState.GetErrors()));
+            if (model == null || model.Requisicao == null || model.Itens == null || model.Itens.Count == 0)
+                return BadRequest("Dados inválidos");
 
             try
             {
-                var notaFiscalRegistrada = await _gestaoService.RegistroDeNotaFiscal(notaFiscal);
-                return Ok(new ResultViewModel<NotaFiscal>(notaFiscalRegistrada));
+                var requisicao = await _requisicaoService.Create(model.Requisicao);
+
+                if (requisicao == null)
+                    return BadRequest(new ResultViewModel<string>("Erro ao criar nota fiscal"));
+
+                var notaFiscalGet = await _gestaoService.CriarItens(model.Itens, requisicao);
+
+                return Ok(notaFiscalGet);
             }
-            catch (DbException)
+            catch (Exception ex)
             {
-                return StatusCode(500, new ResultViewModel<NotaFiscal>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
-            }
-            catch(ArgumentException e)
-            {
-                return BadRequest(new ResultViewModel<NotaFiscal>(e.Message.Normalize()));
+                return BadRequest(new ResultViewModel<string>(ex.Message));
             }
         }
 
-        [HttpPost("registrar/itemrequisicao/{id}")]
-        public async Task<IActionResult> RegistrarItemRequisicao(int id, CreateItemNotaFiscaViewModel itemFiscal)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<CreateNotaFiscalViewModel>(ModelState.GetErrors()));
-
-            try
-            {
-                var itemFiscalRegistrado = await _gestaoService.RegistrarItemDeNotaFiscal(id, itemFiscal);
-                return Ok(new ResultViewModel<ItensNotum>(itemFiscalRegistrado));
-            }
-            catch (DbException)
-            {
-                return StatusCode(500, new ResultViewModel<ItensNotum>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(new ResultViewModel<ItensNotum>(e.Message.Normalize()));
-            }
-        }
 
 
     }

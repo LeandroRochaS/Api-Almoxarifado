@@ -9,6 +9,6 @@ namespace AlmoxarifadoServices.Interfaces
 {
     public interface ISetorService
     {
-        Task<Setor> ObterPorId(int id);
+        Task<Setor> GetById(int id);
     }
 }

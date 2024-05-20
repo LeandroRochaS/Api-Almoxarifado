@@ -6,11 +6,18 @@ using AlmoxarifadoServices.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<xAlmoxarifadoContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoHome")));
+
+builder.Services.AddSingleton<IDbConnectionService, DbConnectionService>();
+
+builder.Services.AddDbContext<xAlmoxarifadoContext>((service, options) =>
+{
+    var dbConnection = service.GetRequiredService<IDbConnectionService>();
+    options.UseSqlServer(dbConnection.GetConnectionString());
+});
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -57,11 +64,13 @@ void ServicesDependencies(IServiceCollection services)
     services.AddScoped<ISecretariaService, SecretariaService>();
     services.AddScoped<IUnidadeDeMedidaService, UnidadeDeMedidaService>();
     services.AddScoped<IItemNotaService, ItemNotaService>();
-    services.AddScoped<IGestaoNotaFiscalService, EntradaNotaFiscalService>();
+    services.AddScoped<IGestaoNotaFiscalService, GestaoNotaFiscalService>();
     services.AddScoped<IClienteService, ClienteService>();
     services.AddScoped<ISetorService, SetorService>();
     services.AddScoped<IRequisicaoService, RequisicaoService>();
     services.AddScoped<IItemRequisicaoService, ItemRequisicaoService>();
+    services.AddScoped<IEstoqueService, EstoqueService>();
+    services.AddScoped<IGestaoRequisicaoService, GestaoRequisicaoService>();
 }
 
 void RepositoriesDependencies(IServiceCollection services)
@@ -80,4 +89,5 @@ void RepositoriesDependencies(IServiceCollection services)
     services.AddScoped<ISetorRepository, SetorRepository>();    
     services.AddScoped<IItemRequisicaoRepository, ItemRequisicaoRepository>();
     services.AddScoped<IRequisicaoRepository, RequisicaoRepository>();
+    services.AddScoped<IEstoqueRepository,  EstoqueRepository>();
 }

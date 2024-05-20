@@ -37,7 +37,7 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
 
         public async Task<ItensNotum> GetById(int id)
         {
-            return await _context.ItensNota.FirstOrDefaultAsync(x => x.IdSec == id);
+            return await _context.ItensNota.FirstOrDefaultAsync(x => x.IdNota == id);
         }
 
         public async Task<ItensNotum> Update(ItensNotum entity)
