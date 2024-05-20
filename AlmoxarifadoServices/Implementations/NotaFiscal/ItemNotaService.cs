@@ -1,17 +1,9 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
-<<<<<<< HEAD
 using AlmoxarifadoInfrastructure.Data.Repositories;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
-=======
-using AlmoxarifadoServices.Interfaces;
-using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -22,25 +14,24 @@ namespace AlmoxarifadoServices.Implementations
         private readonly IProdutoService _produtoService;
         private readonly ISecretariaService _secretariaService;
         private readonly IEstoqueService _estoqueService;
-<<<<<<< HEAD
         private readonly INotaFiscalRepository _notaFiscalRepository;
         private readonly IMapper _mapper;
         private readonly MapperConfiguration configurationMapper;
 
-
-        public ItemNotaService(IItemNotaRepository repository, INotaFiscalService notaFiscalService, IProdutoService produtoService, ISecretariaService secretariaService, IEstoqueService estoqueService, INotaFiscalRepository notaFiscalRepository)
-=======
-
-
-        public ItemNotaService(IItemNotaRepository repository, INotaFiscalService notaFiscalService, IProdutoService produtoService, ISecretariaService secretariaService, IEstoqueService estoqueService)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
+        public ItemNotaService(
+            IItemNotaRepository repository,
+            INotaFiscalService notaFiscalService,
+            IProdutoService produtoService,
+            ISecretariaService secretariaService,
+            IEstoqueService estoqueService,
+            INotaFiscalRepository notaFiscalRepository
+        )
         {
             _repository = repository;
             _notaFiscalService = notaFiscalService;
             _produtoService = produtoService;
             _estoqueService = estoqueService;
             _secretariaService = secretariaService;
-<<<<<<< HEAD
             _notaFiscalRepository = notaFiscalRepository;
 
             configurationMapper = new MapperConfiguration(cfg =>
@@ -53,12 +44,10 @@ namespace AlmoxarifadoServices.Implementations
             _mapper = configurationMapper.CreateMapper();
         }
 
-        public async Task<ItemNotaFiscalGetDTO> Create(int idNotaFiscal, ItemNotaFiscalPostDTO itemFiscal)
-=======
-        }
-
-        public async Task<ItensNotum> Create(int idNotaFiscal, CreateItemNotaFiscalViewModel itemFiscal)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
+        public async Task<ItemNotaFiscalGetDTO> Create(
+            int idNotaFiscal,
+            ItemNotaFiscalPostDTO itemFiscal
+        )
         {
             try
             {
@@ -72,13 +61,13 @@ namespace AlmoxarifadoServices.Implementations
                     var resultItem = await _repository.Create(item);
                     if (resultItem != null)
                     {
-                        await AtualizarEstoque(itemFiscal.IdPro, itemFiscal.IdPro, itemFiscal.QtdPro);
+                        await AtualizarEstoque(
+                            itemFiscal.IdPro,
+                            itemFiscal.IdPro,
+                            itemFiscal.QtdPro
+                        );
                         await _notaFiscalService.AdicionarItem(notaFiscal);
-<<<<<<< HEAD
                         return _mapper.Map<ItemNotaFiscalGetDTO>(resultItem);
-=======
-                        return item;
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
                     }
                 }
                 return null;
@@ -90,30 +79,20 @@ namespace AlmoxarifadoServices.Implementations
             }
         }
 
-
-<<<<<<< HEAD
         public async Task<ItemNotaFiscalGetDTO> Delete(int id)
-=======
-        public async Task<ItensNotum> Delete(int id)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             var item = await _repository.GetById(id);
             if (item != null)
             {
-<<<<<<< HEAD
                 var itemResult = await _repository.Delete(item);
                 return _mapper.Map<ItemNotaFiscalGetDTO>(itemResult);
-=======
-                await _repository.Delete(item);
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             }
             return null;
         }
 
-<<<<<<< HEAD
         public async Task<IEnumerable<ItemNotaFiscalGetDTO>> GetAll()
         {
-           var list = await _repository.GetAll();
+            var list = await _repository.GetAll();
             return _mapper.Map<IEnumerable<ItemNotaFiscalGetDTO>>(list);
         }
 
@@ -124,24 +103,10 @@ namespace AlmoxarifadoServices.Implementations
         }
 
         public async Task<ItemNotaFiscalGetDTO> Update(int id, ItemNotaFiscalPutDTO entity)
-=======
-        public async Task<IEnumerable<ItensNotum>> GetAll()
-        {
-            return await _repository.GetAll();
-        }
-
-        public async Task<ItensNotum> GetById(int id)
-        {
-            return await _repository.GetById(id);
-        }
-
-        public async Task<ItensNotum> Update(int id, ItensNotum entity)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             var ItemNota = await _repository.GetById(id);
             if (ItemNota == null)
                 return null;
-<<<<<<< HEAD
             ItemNota.PreUnit = entity.PreUnit;
             ItemNota.QtdPro = entity.QtdPro;
             ItemNota.TotalItem = entity.QtdPro * entity.PreUnit;
@@ -150,13 +115,6 @@ namespace AlmoxarifadoServices.Implementations
         }
 
         private async Task<bool> VerificarRelacionamentosItem(ItemNotaFiscalPostDTO itemFiscal)
-=======
-
-            return await _repository.Update(entity);
-        }
-
-        private async Task<bool> VerificarRelacionamentosItem(CreateItemNotaFiscalViewModel itemFiscal)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             if (itemFiscal.IdSec == 0 || itemFiscal.IdPro == 0)
                 throw new ArgumentException("Produto ou Secretaria inválido");
@@ -174,11 +132,7 @@ namespace AlmoxarifadoServices.Implementations
 
         private async Task<NotaFiscal> ObterNotaFiscalPorId(int id)
         {
-<<<<<<< HEAD
             var notaFiscal = await _notaFiscalRepository.GetById(id);
-=======
-            var notaFiscal = await _notaFiscalService.GetById(id);
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
             if (notaFiscal == null)
                 throw new ArgumentException("Nota Fiscal não encontrada");
 
@@ -194,11 +148,8 @@ namespace AlmoxarifadoServices.Implementations
         {
             return await _produtoService.GetById(id);
         }
-<<<<<<< HEAD
+
         private ItensNotum CriarItemNotaFiscal(ItemNotaFiscalPostDTO itemFiscal, int idNotaFiscal)
-=======
-        private ItensNotum CriarItemNotaFiscal(CreateItemNotaFiscalViewModel itemFiscal, int idNotaFiscal)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
         {
             return new ItensNotum
             {
@@ -213,12 +164,9 @@ namespace AlmoxarifadoServices.Implementations
             };
         }
 
-
-
         private async Task AtualizarEstoque(int IdPro, int IdSec, decimal quantidadeSaida)
         {
             await _estoqueService.AdicionarEstoque(IdPro, IdSec, quantidadeSaida);
         }
-
     }
 }
