@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AlmoxarifadoServices.Interfaces;
 using AlmoxarifadoAPI.Models;
-using AlmoxarifadoServices.ViewModels;
 using AlmoxarifadoAPI.Extensions;
-using AlmoxarifadoServices.ViewModels.Produto;
+using AlmoxarifadoServices.DTO;
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -54,7 +53,7 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         [HttpPost("produtos")]
-        public async Task<IActionResult> CriarProduto(CreateProdutoViewModel produto)
+        public async Task<IActionResult> CriarProduto(ProdutoPostDTO produto)
         {
             if(!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<Produto>(ModelState.GetErrors()));

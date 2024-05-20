@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AlmoxarifadoServices.Interfaces;
-using AlmoxarifadoAPI.Models;
-using AlmoxarifadoServices.ViewModels;
-using AlmoxarifadoAPI.Extensions;
-using AlmoxarifadoServices.ViewModels.Produto;
-using AlmoxarifadoServices.ViewModels.NotaFiscal;
-using System.Data.Common;
-using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
+using AlmoxarifadoServices.DTO;
+
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -14,6 +9,7 @@ namespace AlmoxarifadoAPI.Controllers
     [Route("v1/EntradaFiscal")]
     public class GestaoEntradaController : ControllerBase
     {
+<<<<<<< Updated upstream
         private readonly IGestaoNotaFiscalService _gestaoService;
 
         public GestaoEntradaController(IGestaoNotaFiscalService gestaoService)
@@ -26,6 +22,19 @@ namespace AlmoxarifadoAPI.Controllers
 
         [HttpPost("registrar/notafiscal")]
         public async Task<IActionResult> RegistrarNotaFiscal(CreateNotaFiscalViewModel notaFiscal)
+=======
+        private readonly INotaFiscalService _notaFiscalService;
+        private readonly IGestaoNotaFiscalService _gestaoNotaFiscalService;
+
+        public GestaoEntradaController(INotaFiscalService notaFiscalService, IGestaoNotaFiscalService gestaoNotaFiscalService)
+        {
+            _notaFiscalService = notaFiscalService;
+            _gestaoNotaFiscalService = gestaoNotaFiscalService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] NotaFiscalComItensPostlDTO model)
+>>>>>>> Stashed changes
         {
             if(!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<CreateNotaFiscalViewModel>(ModelState.GetErrors()));

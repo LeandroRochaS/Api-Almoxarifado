@@ -17,6 +17,10 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             _context = pContext;
         }
 
+        public GrupoRepository()
+        {
+        }
+
         public List<Grupo> ObterTodosGrupos()
         {
             return _context.Grupos.ToList();

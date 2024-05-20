@@ -1,4 +1,4 @@
-﻿namespace AlmoxarifadoServices.ViewModels
+﻿namespace AlmoxarifadoServices.DTO
 {
     public class ResultViewModel<T>
     {

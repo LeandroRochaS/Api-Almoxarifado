@@ -4,12 +4,16 @@ using AlmoxarifadoInfrastructure.Data;
 using AlmoxarifadoServices.Implementations;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<xAlmoxarifadoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoHome")));
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 
 //Carregando Classes de Repositories
 RepositoriesDependencies(builder.Services);

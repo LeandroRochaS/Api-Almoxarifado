@@ -1,9 +1,10 @@
 ﻿using AlmoxarifadoDomain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace AlmoxarifadoServices.ViewModels.Produto
+
+namespace AlmoxarifadoServices.DTO
 {
-    public class CreateProdutoViewModel
+    public class ProdutoPostDTO
     {
         [Required(ErrorMessage = "O campo Id da Classe é obrigatório.")]
         public int IdClasse { get; set; }

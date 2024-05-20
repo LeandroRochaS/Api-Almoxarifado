@@ -1,12 +1,7 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
+using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
-using AlmoxarifadoServices.ViewModels.Produto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -20,7 +15,7 @@ namespace AlmoxarifadoServices.Implementations
             _repository = repository;
         }
 
-        public async Task<Produto> CreateV2(CreateProdutoViewModel entity)
+        public async Task<Produto> CreateV2(ProdutoPostDTO entity)
         {
             if (entity != null)
             {

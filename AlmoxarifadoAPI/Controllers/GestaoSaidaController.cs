@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AlmoxarifadoServices.Interfaces;
+<<<<<<< Updated upstream
 using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.ViewModels;
 using AlmoxarifadoAPI.Extensions;
@@ -7,6 +8,9 @@ using AlmoxarifadoServices.ViewModels.Produto;
 using AlmoxarifadoServices.ViewModels.NotaFiscal;
 using System.Data.Common;
 using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
+=======
+using AlmoxarifadoServices.DTO;
+>>>>>>> Stashed changes
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -24,8 +28,14 @@ namespace AlmoxarifadoAPI.Controllers
 
    
 
+<<<<<<< Updated upstream
         [HttpPost("registrar/requisicao")]
         public async Task<IActionResult> RegistrarRequisicao(CreateNotaFiscalViewModel notaFiscal)
+=======
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRequisicaoComitens([FromBody] RequisicaoComItensPostDTO model)
+>>>>>>> Stashed changes
         {
             if(!ModelState.IsValid)
                 return BadRequest(new ResultViewModel<CreateNotaFiscalViewModel>(ModelState.GetErrors()));
