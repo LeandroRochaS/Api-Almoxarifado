@@ -1,22 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AlmoxarifadoServices.Implementations;
 using AlmoxarifadoServices.Interfaces;
-<<<<<<< Updated upstream
-using AlmoxarifadoAPI.Models;
-using AlmoxarifadoServices.ViewModels;
-using AlmoxarifadoAPI.Extensions;
-using AlmoxarifadoServices.ViewModels.Produto;
-using AlmoxarifadoServices.ViewModels.NotaFiscal;
-using System.Data.Common;
-using AlmoxarifadoServices.ViewModels.ItemNotaFiscal;
-<<<<<<< HEAD
-=======
-using AlmoxarifadoServices.DTO;
->>>>>>> Stashed changes
-=======
-using AlmoxarifadoServices.ViewModels.Requisicao;
 using AlmoxarifadoServices.ViewModels.ItemRequisicao;
-using AlmoxarifadoServices.Implementations;
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
+using AlmoxarifadoServices.ViewModels.Requisicao;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -26,32 +12,27 @@ namespace AlmoxarifadoAPI.Controllers
     {
         private readonly IGestaoRequisicaoService _gestaoService;
         private readonly IRequisicaoService _requisicaoService;
-      
 
-        public GestaoSaidaController(IGestaoRequisicaoService gestaoService, IRequisicaoService requisicaoService)
+        public GestaoSaidaController(
+            IGestaoRequisicaoService gestaoService,
+            IRequisicaoService requisicaoService
+        )
         {
             _gestaoService = gestaoService;
             _requisicaoService = requisicaoService;
         }
 
-
-
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-        [HttpPost("registrar/requisicao")]
-        public async Task<IActionResult> RegistrarRequisicao(CreateNotaFiscalViewModel notaFiscal)
-=======
-
         [HttpPost]
-        public async Task<IActionResult> CreateRequisicaoComitens([FromBody] RequisicaoComItensPostDTO model)
->>>>>>> Stashed changes
-=======
-
-        [HttpPost]
-        public async Task<IActionResult> CreateRequisicaoComitens([FromBody] CreateRequisicaoComItensViewModel model)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
+        public async Task<IActionResult> CreateRequisicaoComitens(
+            [FromBody] RequisicaoComItensPostDTO model
+        )
         {
-            if (model == null || model.Requisicao == null || model.Itens == null || model.Itens.Count == 0)
+            if (
+                model == null
+                || model.Requisicao == null
+                || model.Itens == null
+                || model.Itens.Count == 0
+            )
                 return BadRequest("Dados inválidos");
 
             try
@@ -70,8 +51,5 @@ namespace AlmoxarifadoAPI.Controllers
                 return BadRequest(new ResultViewModel<string>(ex.Message));
             }
         }
-
-
-
     }
 }

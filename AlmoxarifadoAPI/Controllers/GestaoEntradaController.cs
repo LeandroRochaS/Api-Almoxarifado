@@ -9,14 +9,12 @@ namespace AlmoxarifadoAPI.Controllers
     [Route("v1/EntradaFiscal")]
     public class GestaoEntradaController : ControllerBase
     {
-<<<<<<< HEAD
-<<<<<<< Updated upstream
+
         private readonly IGestaoNotaFiscalService _gestaoService;
 =======
         private readonly INotaFiscalService _notaFiscalService;
         private readonly IItemNotaService _itemNotaService;
         private readonly IGestaoNotaFiscalService _gestaoNotaFiscalService;
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
 
         public GestaoEntradaController(INotaFiscalService notaFiscalService, IItemNotaService itemNotaService, IGestaoNotaFiscalService gestaoNotaFiscalService)
         {
@@ -25,13 +23,6 @@ namespace AlmoxarifadoAPI.Controllers
             _gestaoNotaFiscalService = gestaoNotaFiscalService;
         }
 
-<<<<<<< HEAD
-
-   
-
-        [HttpPost("registrar/notafiscal")]
-        public async Task<IActionResult> RegistrarNotaFiscal(CreateNotaFiscalViewModel notaFiscal)
-=======
         private readonly INotaFiscalService _notaFiscalService;
         private readonly IGestaoNotaFiscalService _gestaoNotaFiscalService;
 
@@ -42,12 +33,7 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] NotaFiscalComItensPostlDTO model)
->>>>>>> Stashed changes
-=======
-        [HttpPost]
-        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] CreateNotaFiscalComItensViewModel model)
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
+        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] NotaFiscalComItensPostlDTO model)       
         {
             if (model == null || model.NotaFiscal == null || model.Itens == null || model.Itens.Count == 0)
                 return BadRequest("Dados inválidos");
