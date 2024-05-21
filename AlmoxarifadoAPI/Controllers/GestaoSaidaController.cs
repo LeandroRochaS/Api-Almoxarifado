@@ -1,7 +1,5 @@
-﻿using AlmoxarifadoServices.Implementations;
+﻿using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
-using AlmoxarifadoServices.ViewModels.ItemRequisicao;
-using AlmoxarifadoServices.ViewModels.Requisicao;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlmoxarifadoAPI.Controllers

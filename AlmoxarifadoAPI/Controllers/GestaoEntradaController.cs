@@ -9,9 +9,7 @@ namespace AlmoxarifadoAPI.Controllers
     [Route("v1/EntradaFiscal")]
     public class GestaoEntradaController : ControllerBase
     {
-
         private readonly IGestaoNotaFiscalService _gestaoService;
-=======
         private readonly INotaFiscalService _notaFiscalService;
         private readonly IItemNotaService _itemNotaService;
         private readonly IGestaoNotaFiscalService _gestaoNotaFiscalService;
@@ -23,17 +21,8 @@ namespace AlmoxarifadoAPI.Controllers
             _gestaoNotaFiscalService = gestaoNotaFiscalService;
         }
 
-        private readonly INotaFiscalService _notaFiscalService;
-        private readonly IGestaoNotaFiscalService _gestaoNotaFiscalService;
-
-        public GestaoEntradaController(INotaFiscalService notaFiscalService, IGestaoNotaFiscalService gestaoNotaFiscalService)
-        {
-            _notaFiscalService = notaFiscalService;
-            _gestaoNotaFiscalService = gestaoNotaFiscalService;
-        }
-
         [HttpPost]
-        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] NotaFiscalComItensPostlDTO model)       
+        public async Task<IActionResult> CreateNotaFiscalComItens([FromBody] NotaFiscalComItensPostlDTO model)
         {
             if (model == null || model.NotaFiscal == null || model.Itens == null || model.Itens.Count == 0)
                 return BadRequest("Dados inválidos");
