@@ -22,9 +22,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+    <PackageReference Include="Scrutor" Version="4.2.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AlmoxarifadoDomain\AlmoxarifadoDomain.csproj" />
     <ProjectReference Include="..\AlmoxarifadoInfrastructure\AlmoxarifadoInfrastructure.csproj" />
   </ItemGroup>
 

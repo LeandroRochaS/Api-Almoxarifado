@@ -8,8 +8,8 @@ namespace AlmoxarifadoInfrastructure.Data.Interfaces
 {
     public interface IDbConnectionService
     {
- 
-            string GetConnectionString();
+
+       string GetConnectionString();
         
     }
 }

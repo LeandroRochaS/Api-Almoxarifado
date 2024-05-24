@@ -3,6 +3,7 @@ using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -40,12 +41,18 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         // GET: api/Requisicao/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetRequisicao(int id)
+        [HttpGet("obterReq")]
+        public async Task<IActionResult> GetRequisicao([BindRequired] int NumItem, [BindRequired] int IdProduto, [BindRequired] int IdRequisicao, [BindRequired] int IdSecretaria)
         {
             try
             {
-                var requisicao = await _itemService.GetById(id);
+                var requisicao = await _itemService.GetByIds(new KeyItemRequisicaoDTO
+                {
+                    NumItem = NumItem,
+                    IdProduto = IdProduto,
+                    IdRequisicao = IdRequisicao,
+                    IdSecretaria = IdSecretaria
+                });
                 if (requisicao == null)
                 {
                     return NotFound(new ResultViewModel<string>("Requisição não encontrada."));
@@ -89,9 +96,9 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         // PUT: api/Requisicao/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> PutRequisicao(
-            int id,
+            [BindRequired] int NumItem, [BindRequired] int IdProduto, [BindRequired] int IdRequisicao, [BindRequired] int IdSecretaria,
             [FromBody] ItemRequisicaoPutDTO requisicao
         )
         {
@@ -99,7 +106,13 @@ namespace AlmoxarifadoAPI.Controllers
                 return BadRequest(new ResultViewModel<Requisicao>(ModelState.GetErrors()));
             try
             {
-                var updatedRequisicao = await _itemService.Update(id, requisicao);
+                var updatedRequisicao = await _itemService.Update(new KeyItemRequisicaoDTO
+                {
+                    NumItem = NumItem,
+                    IdProduto = IdProduto,
+                    IdRequisicao = IdRequisicao,
+                    IdSecretaria = IdSecretaria
+                }, requisicao);
                 if (updatedRequisicao == null)
                 {
                     return NotFound(new ResultViewModel<string>("Requisição não encontrada."));
@@ -116,12 +129,18 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         // DELETE: api/Requisicao/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRequisicao(int id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRequisicao([BindRequired] int NumItem, [BindRequired] int IdProduto, [BindRequired] int IdRequisicao, [BindRequired] int IdSecretaria)
         {
             try
             {
-                var requisicaoToDelete = await _itemService.Delete(id);
+                var requisicaoToDelete = await _itemService.Delete(new KeyItemRequisicaoDTO
+                {
+                    NumItem = NumItem,
+                    IdProduto = IdProduto,
+                    IdRequisicao = IdRequisicao,
+                    IdSecretaria = IdSecretaria
+                });
                 if (requisicaoToDelete == null)
                 {
                     return NotFound(new ResultViewModel<string>("Requisição não encontrada."));

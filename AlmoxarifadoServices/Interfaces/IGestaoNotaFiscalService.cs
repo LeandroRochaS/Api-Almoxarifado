@@ -6,7 +6,7 @@ namespace AlmoxarifadoServices.Interfaces
     public interface IGestaoNotaFiscalService
     {
         Task<NotaFiscalComItensGetDTO> CriarItens(
-            List<NotaFiscalPostDTO> itens,
+            List<ItemNotaFiscalPostDTO> itens,
             NotaFiscal notaFiscal
         );
     }

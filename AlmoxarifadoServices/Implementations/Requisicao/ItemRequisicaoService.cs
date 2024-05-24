@@ -4,6 +4,7 @@ using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -93,16 +94,15 @@ namespace AlmoxarifadoServices.Implementations
             return null;
         }
 
-        public async Task<ItemRequisicaoGetDTO> Delete(int id)
+        public async Task<ItemRequisicaoGetDTO> Delete(KeyItemRequisicaoDTO keys)
         {
-            var itemRequisicao = await _itemRequisicaoRepository.GetById(id);
+            var itemRequisicao = await _itemRequisicaoRepository.GetById(keys.NumItem, keys.IdProduto, keys.IdRequisicao, keys.IdSecretaria);
             if (itemRequisicao == null)
             {
                 throw new ArgumentException("Item de requisição não encontrado.");
             }
-
             return _mapper.Map<ItemRequisicaoGetDTO>(
-                await _itemRequisicaoRepository.Delete(itemRequisicao)
+            await _itemRequisicaoRepository.Delete(itemRequisicao)
             );
         }
 
@@ -112,27 +112,28 @@ namespace AlmoxarifadoServices.Implementations
             return _mapper.Map<IEnumerable<ItemRequisicaoGetDTO>>(items);
         }
 
-        public async Task<ItemRequisicaoGetDTO> GetById(int id)
+        public async Task<ItemRequisicaoGetDTO> GetByIds(KeyItemRequisicaoDTO keys)
         {
-            var item = await _itemRequisicaoRepository.GetById(id);
+            var item = await _itemRequisicaoRepository.GetById(keys.NumItem, keys.IdProduto, keys.IdRequisicao, keys.IdSecretaria);
             return _mapper.Map<ItemRequisicaoGetDTO>(item);
         }
 
-        public async Task<ItemRequisicaoGetDTO> Update(int id, ItemRequisicaoPutDTO entity)
+        public async Task<ItemRequisicaoGetDTO> Update(KeyItemRequisicaoDTO keys, ItemRequisicaoPutDTO entity)
         {
-            var itemRequisicao = await _itemRequisicaoRepository.GetById(id);
+            var itemRequisicao = await _itemRequisicaoRepository.GetById(keys.NumItem, keys.IdProduto, keys.IdRequisicao, keys.IdSecretaria);
             if (itemRequisicao == null)
             {
                 throw new ArgumentException("Item de requisição não encontrado.");
             }
-
-            var updatedItem = _mapper.Map(entity, itemRequisicao);
-            updatedItem.TotalItem = updatedItem.QtdPro * updatedItem.PreUnit;
-            updatedItem.TotalReal = updatedItem.TotalItem;
-            var result = await _itemRequisicaoRepository.Update(updatedItem);
-            return _mapper.Map<ItemRequisicaoGetDTO>(result);
+            itemRequisicao.QtdPro = entity.QtdPro;
+            itemRequisicao.TotalItem = entity.QtdPro * itemRequisicao.PreUnit;
+            itemRequisicao.TotalReal = entity.QtdPro * itemRequisicao.PreUnit;
+            var result = await _itemRequisicaoRepository.Update(itemRequisicao);
+            if (result == 1)
+                return _mapper.Map<ItemRequisicaoGetDTO>(itemRequisicao);
+            return null;
         }
-
+            
         private async Task VerificarEstoqueMinimo(int idPro, int idSec, int idReq)
         {
             var produto = await _produtoService.GetById(idPro);

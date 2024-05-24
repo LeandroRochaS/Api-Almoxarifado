@@ -36,7 +36,7 @@ namespace AlmoxarifadoAPI.Controllers
 
                 var notaFiscalGet = await _gestaoNotaFiscalService.CriarItens(model.Itens, notaFiscal);
 
-                return Ok(notaFiscalGet);
+                return Ok(new ResultViewModel<NotaFiscalComItensGetDTO>(notaFiscalGet));
             }
             catch (Exception ex)
             {

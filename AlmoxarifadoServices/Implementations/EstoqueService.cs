@@ -1,13 +1,6 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.Interfaces;
-<<<<<<< HEAD
-=======
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
->>>>>>> 30e6dd1030f4b35a99494c3f0dde13c4ced4d96e
 
 namespace AlmoxarifadoServices.Implementations
 {

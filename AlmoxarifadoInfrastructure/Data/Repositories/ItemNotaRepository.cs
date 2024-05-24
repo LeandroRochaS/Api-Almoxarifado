@@ -33,18 +33,20 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             return entity;
         }
 
+  
         public async Task<IEnumerable<ItensNotum>> GetAll() => await _context.ItensNota.AsNoTracking().ToListAsync();
 
-        public async Task<ItensNotum> GetById(int id)
+     
+
+        public async Task<ItensNotum> GetById(int itemNum, int idPro, int idNota, int idSec)
         {
-            return await _context.ItensNota.FirstOrDefaultAsync(x => x.IdNota == id);
+            return await _context.ItensNota.FirstOrDefaultAsync(x => x.ItemNum == itemNum && x.IdPro == idPro && x.IdNota == idNota && x.IdSec == idSec);
         }
 
-        public async Task<ItensNotum> Update(ItensNotum entity)
+        public async Task<int> Update(ItensNotum entity)
         {
             _context.ItensNota.Update(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+            return await _context.SaveChangesAsync();
         }
     }
 }

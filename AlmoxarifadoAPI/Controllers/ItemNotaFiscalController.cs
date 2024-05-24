@@ -3,6 +3,7 @@ using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AlmoxarifadoAPI.Controllers
 {
@@ -44,12 +45,18 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         // GET: api/ItemNotaFiscal/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetItemNotaFiscal(int id)
+        [HttpGet("obterNota")]
+        public async Task<IActionResult> GetItemNotaFiscal([BindRequired] int NumItem, [BindRequired] int IdProduto, [BindRequired] int IdNota, [BindRequired] int IdSecretaria)
         {
             try
             {
-                var item = await _itemNotaService.GetById(id);
+                var item = await _itemNotaService.GetById(new KeyItemNotaDTO
+                {
+                    NumItem = NumItem,
+                    IdProduto = IdProduto,
+                    IdNota = IdNota,
+                    IdSecretaria = IdSecretaria
+                });
                 if (item == null)
                 {
                     return NotFound(
@@ -95,9 +102,9 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         // PUT: api/ItemNotaFiscal/5
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> PutItemNotaFiscal(
-            int id,
+           [BindRequired] int NumItem, [BindRequired] int IdProduto, [BindRequired] int IdNota, [BindRequired] int IdSecretaria,
             [FromBody] ItemNotaFiscalPutDTO item
         )
         {
@@ -105,7 +112,13 @@ namespace AlmoxarifadoAPI.Controllers
                 return BadRequest(new ResultViewModel<ItensNotum>(ModelState.GetErrors()));
             try
             {
-                var updatedItem = await _itemNotaService.Update(id, item);
+                var updatedItem = await _itemNotaService.Update(new KeyItemNotaDTO
+                {
+                    NumItem = NumItem,
+                    IdProduto = IdProduto,
+                    IdNota = IdNota,
+                    IdSecretaria = IdSecretaria
+                }, item);
                 if (updatedItem == null)
                 {
                     return NotFound(
@@ -124,12 +137,18 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         // DELETE: api/ItemNotaFiscal/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteItemNotaFiscal(int id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteItemNotaFiscal([BindRequired] int NumItem, [BindRequired] int IdProduto, [BindRequired] int IdNota, [BindRequired] int IdSecretaria)
         {
             try
             {
-                var itemToDelete = await _itemNotaService.Delete(id);
+                var itemToDelete = await _itemNotaService.Delete(new KeyItemNotaDTO
+                {
+                    NumItem = NumItem,
+                    IdProduto = IdProduto,
+                    IdNota = IdNota,
+                    IdSecretaria = IdSecretaria
+                });
                 if (itemToDelete == null)
                 {
                     return NotFound(

@@ -3,6 +3,8 @@ using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -12,18 +14,27 @@ namespace AlmoxarifadoServices.Implementations
         private readonly IFornecedorService _fornecedorService;
         private readonly ISecretariaService _secretariaService;
         private readonly IMapper _mapper;
+        private readonly MapperConfiguration configurationMapper;
+
 
         public NotaFiscalService(
             INotaFiscalRepository repository,
             IFornecedorService fornecedorService,
-            ISecretariaService secretariaService,
-            IMapper mapper
+            ISecretariaService secretariaService
         )
         {
             _repository = repository;
             _fornecedorService = fornecedorService;
             _secretariaService = secretariaService;
-            _mapper = mapper;
+            configurationMapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<NotaFiscal, NotaFiscalGetDTO>();
+                cfg.CreateMap<NotaFiscalGetDTO, NotaFiscal>();
+                cfg.CreateMap<IEnumerable<NotaFiscal>, IEnumerable<NotaFiscalGetDTO>>();
+
+
+            });
+            _mapper = configurationMapper.CreateMapper();
         }
 
         public async Task<NotaFiscal> Create(NotaFiscalPostDTO notaFiscalView)

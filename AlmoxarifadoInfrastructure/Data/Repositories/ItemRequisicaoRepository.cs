@@ -31,21 +31,24 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             return entity;
         }
 
+
         public async Task<IEnumerable<ItensReq>> GetAll()
         {
             return await _context.ItensReqs.ToListAsync();
         }
 
-        public async Task<ItensReq> GetById(int id)
+
+
+        public async Task<ItensReq> GetById(int itemNum, int idPro, int idReq, int idSec)
         {
-            return await _context.ItensReqs.FirstOrDefaultAsync(x => x.NumItem == id);
+            return await _context.ItensReqs.FirstOrDefaultAsync(x => x.NumItem == itemNum && x.IdPro == idPro && x.IdReq == idReq && x.IdSec == idSec);
         }
 
-        public async Task<ItensReq> Update(ItensReq entity)
+        public async Task<int> Update(ItensReq entity)
         {
             _context.ItensReqs.Update(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+            return await _context.SaveChangesAsync(); 
         }
+ 
     }
 }

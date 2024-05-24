@@ -4,6 +4,7 @@ using AlmoxarifadoInfrastructure.Data.Repositories;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
+using System.Collections.Generic;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -63,7 +64,7 @@ namespace AlmoxarifadoServices.Implementations
                     {
                         await AtualizarEstoque(
                             itemFiscal.IdPro,
-                            itemFiscal.IdPro,
+                            itemFiscal.IdSec,
                             itemFiscal.QtdPro
                         );
                         await _notaFiscalService.AdicionarItem(notaFiscal);
@@ -79,9 +80,9 @@ namespace AlmoxarifadoServices.Implementations
             }
         }
 
-        public async Task<ItemNotaFiscalGetDTO> Delete(int id)
+        public async Task<ItemNotaFiscalGetDTO> Delete(KeyItemNotaDTO keys)
         {
-            var item = await _repository.GetById(id);
+            var item = await _repository.GetById(keys.NumItem, keys.IdProduto, keys.IdNota, keys.IdSecretaria);
             if (item != null)
             {
                 var itemResult = await _repository.Delete(item);
@@ -96,22 +97,24 @@ namespace AlmoxarifadoServices.Implementations
             return _mapper.Map<IEnumerable<ItemNotaFiscalGetDTO>>(list);
         }
 
-        public async Task<ItemNotaFiscalGetDTO> GetById(int id)
+        public async Task<ItemNotaFiscalGetDTO> GetById(KeyItemNotaDTO keys)
         {
-            var item = await _repository.GetById(id);
+            var item = await _repository.GetById(keys.NumItem, keys.IdProduto, keys.IdNota, keys.IdSecretaria);
             return _mapper.Map<ItemNotaFiscalGetDTO>(item);
         }
 
-        public async Task<ItemNotaFiscalGetDTO> Update(int id, ItemNotaFiscalPutDTO entity)
+        public async Task<ItemNotaFiscalGetDTO> Update(KeyItemNotaDTO keys, ItemNotaFiscalPutDTO entity)
         {
-            var ItemNota = await _repository.GetById(id);
+            var ItemNota = await _repository.GetById(keys.NumItem, keys.IdProduto, keys.IdNota, keys.IdSecretaria);
             if (ItemNota == null)
                 return null;
             ItemNota.PreUnit = entity.PreUnit;
             ItemNota.QtdPro = entity.QtdPro;
             ItemNota.TotalItem = entity.QtdPro * entity.PreUnit;
             var result = await _repository.Update(ItemNota);
-            return _mapper.Map<ItemNotaFiscalGetDTO>(result);
+            if(result == 1)
+                return _mapper.Map<ItemNotaFiscalGetDTO>(ItemNota);
+            return null;
         }
 
         private async Task<bool> VerificarRelacionamentosItem(ItemNotaFiscalPostDTO itemFiscal)
