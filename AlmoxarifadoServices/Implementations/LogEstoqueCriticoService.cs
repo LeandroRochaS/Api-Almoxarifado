@@ -1,11 +1,11 @@
 
 using AlmoxarifadoDomain.Models;
+using AlmoxarifadoServices.Interfaces;
 
 namespace AlmoxarifadoServices.Implementations
 {
-    public class LogEstoqueCriticoService
+    public class LogEstoqueCriticoService 
     {
-         
         public static void CriarLogCSV(LogEstoqueMinimo logEstoque)
         {
             // Criação do arquivo CSV

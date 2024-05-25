@@ -56,7 +56,7 @@ namespace AlmoxarifadoServices.Implementations
                     var itemRequisicao = CriarItemRequisicao(id, itemRequisicaoView, totalItem);
 
                     if (
-                        await VerificarEstoqueSuficiente(
+                        await _estoqueService.VerificarEstoqueSuficiente(
                             itemRequisicao.IdPro,
                             itemRequisicao.IdSec,
                             itemRequisicao.QtdPro
@@ -136,9 +136,9 @@ namespace AlmoxarifadoServices.Implementations
             
         private async Task VerificarEstoqueMinimo(int idPro, int idSec, int idReq)
         {
-            var produto = await _produtoService.GetById(idPro);
+            var produto = _mapper.Map<Produto>(await _produtoService.GetById(idPro));
             var estoqueProduto = await _estoqueService.GetById(idPro, idSec);
-            if (estoqueProduto.QtdPro <= produto.EstoqueMin)
+            if (produto.VerificarEstoqueMinimo(estoqueProduto.QtdPro))
             {
                 LogEstoqueCriticoService.CriarLogCSV(
                     new LogEstoqueMinimo
@@ -195,21 +195,6 @@ namespace AlmoxarifadoServices.Implementations
             await _estoqueService.RemoverEstoque(IdPro, IdSec, quantidadeSaida);
         }
 
-        public async Task<bool> VerificarEstoqueSuficiente(
-            int IdPro,
-            int IdSec,
-            decimal quantidadeSaida
-        )
-        {
-            var produto = await _produtoService.GetById(IdPro);
-            if (produto == null)
-                return false;
-
-            var estoque = await _estoqueService.GetById(produto.IdPro, IdSec);
-            if (estoque == null)
-                return false;
-
-            return quantidadeSaida <= estoque.QtdPro;
-        }
+     
     }
 }

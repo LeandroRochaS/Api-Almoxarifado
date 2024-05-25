@@ -1,5 +1,6 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
+using AlmoxarifadoInfrastructure.Data.Repositories;
 using AlmoxarifadoServices.Interfaces;
 
 namespace AlmoxarifadoServices.Implementations
@@ -7,6 +8,7 @@ namespace AlmoxarifadoServices.Implementations
     public class EstoqueService : IEstoqueService
     {
         private readonly IEstoqueRepository _repository;
+        private readonly IProdutoRepository _produtoRepository;
 
         public EstoqueService(IEstoqueRepository repository)
         {
@@ -58,7 +60,7 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Registro de estoque não encontrado.");
             }
 
-            estoque.QtdPro += quantidade;
+            estoque.AdicionarEstoque(quantidade);
             return await _repository.Update(estoque);
         }
 
@@ -70,8 +72,25 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Registro de estoque não encontrado.");
             }
 
-            estoque.QtdPro -= quantidade;
+            estoque.RemoverEstoque(quantidade);
             return await _repository.Update(estoque);
+        }
+
+        public async Task<bool> VerificarEstoqueSuficiente(
+         int IdPro,
+         int IdSec,
+        decimal quantidadeSaida
+     )
+        {
+            var produto = await _produtoRepository.GetById(IdPro);
+            if (produto == null)
+                return false;
+
+            var estoque = await GetById(IdPro, IdSec);
+            if (estoque == null)
+                return false;
+
+            return estoque.VerificarEstoqueSuficiente(quantidadeSaida);
         }
     }
 }

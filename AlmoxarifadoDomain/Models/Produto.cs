@@ -24,5 +24,16 @@ namespace AlmoxarifadoAPI.Models
         public virtual UnidadeMedidum IdUnMedNavigation { get; set; } = null!;
         public virtual ICollection<ItensNotum> ItensNota { get; set; }
         public virtual ICollection<ItensReq> ItensReqs { get; set; }
+
+
+        public bool VerificarEstoqueMinimo(decimal quantidade)
+        {
+            if (EstoqueMin >= quantidade)
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
 }

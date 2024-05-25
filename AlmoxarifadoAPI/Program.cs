@@ -1,6 +1,6 @@
+using AlmoxarifadoInfrastructure.Data;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoInfrastructure.Data.Repositories;
-using AlmoxarifadoInfrastructure.Data;
 using AlmoxarifadoServices.Implementations;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddSingleton<IDbConnectionService, DbConnectionService>();
-builder.Services.AddDbContext<xAlmoxarifadoContext>(async (service, options) =>
-{
-    var dbConnection = service.GetRequiredService<IDbConnectionService>();
-    options.UseSqlServer(dbConnection.GetConnectionString());
-});
+builder.Services.AddDbContext<xAlmoxarifadoContext>(
+    async (service, options) =>
+    {
+        var dbConnection = service.GetRequiredService<IDbConnectionService>();
+        options.UseSqlServer(dbConnection.GetConnectionString());
+    }
+);
 builder.Services.AddAutoMapper(typeof(Program));
 
 //Carregando Classes de Repositories
@@ -22,13 +24,18 @@ RepositoriesDependencies(builder.Services);
 ServicesDependencies(builder.Services);
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllersWithViews()
+builder
+    .Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-);
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
+            .Json
+            .ReferenceLoopHandling
+            .Ignore
+    );
 
 var app = builder.Build();
 
@@ -46,8 +53,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
 
 void ServicesDependencies(IServiceCollection services)
 {
@@ -78,11 +83,11 @@ void RepositoriesDependencies(IServiceCollection services)
     services.AddScoped<ISecretariaRepository, SecretariaRepository>();
     services.AddScoped<IUnidadeDeMedidaRepository, UnidadeDeMedidaRepository>();
     services.AddScoped<IProdutoRepository, ProdutoRepository>();
-    services.AddScoped<ITipoDeNotaRepository,  TipoDeNotaRepository>();
+    services.AddScoped<ITipoDeNotaRepository, TipoDeNotaRepository>();
     services.AddScoped<IItemNotaRepository, ItemNotaRepository>();
     services.AddScoped<IClienteRepository, ClienteRepository>();
-    services.AddScoped<ISetorRepository, SetorRepository>();    
+    services.AddScoped<ISetorRepository, SetorRepository>();
     services.AddScoped<IItemRequisicaoRepository, ItemRequisicaoRepository>();
     services.AddScoped<IRequisicaoRepository, RequisicaoRepository>();
-    services.AddScoped<IEstoqueRepository,  EstoqueRepository>();
+    services.AddScoped<IEstoqueRepository, EstoqueRepository>();
 }
