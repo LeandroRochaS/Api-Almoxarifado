@@ -2,6 +2,7 @@
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
+using AutoMapper;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -9,13 +10,22 @@ namespace AlmoxarifadoServices.Implementations
     {
 
         private readonly IProdutoRepository _repository;
+        private readonly IMapper mapper;
+        private readonly MapperConfiguration configurationMapper;
 
         public ProdutoService(IProdutoRepository repository)
         {
             _repository = repository;
+            configurationMapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProdutoPostDTO, Produto>();
+                cfg.CreateMap<Produto, ProdutoPutDTO>();
+                cfg.CreateMap<Produto, ProdutoGetDTO>();
+            });
+            mapper = configurationMapper.CreateMapper();
         }
 
-        public async Task<Produto> CreateV2(ProdutoPostDTO entity)
+        public async Task<ProdutoGetDTO> Create(ProdutoPostDTO entity)
         {
             if (entity != null)
             {
@@ -32,47 +42,45 @@ namespace AlmoxarifadoServices.Implementations
 
 
                 var result = await _repository.Create(produto);
-                return result;
+                return mapper.Map<ProdutoGetDTO>(result);
             }
             return null;
         }
 
-        public Task<Produto> Create(Produto entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Produto> Delete(int id)
+        public async Task<ProdutoGetDTO> Delete(int id)
         {
             var produtoDb = await _repository.GetById(id);
             if (produtoDb != null)
             {
                 var result = await _repository.Delete(produtoDb);
-                return result;
+                return mapper.Map<ProdutoGetDTO>(result);
             }
-            return produtoDb;
+            return null;
         }
 
-        public async Task<IEnumerable<Produto>> GetAll()
+        public async Task<IEnumerable<ProdutoGetDTO>> GetAll()
         {
-            return await _repository.GetAll();
+            return mapper.Map<List<ProdutoGetDTO>>(await _repository.GetAll());
         }
 
-        public async Task<Produto> GetById(int id)
+        public async Task<ProdutoGetDTO> GetById(int id)
         {
-            return await _repository.GetById(id);
+            return mapper.Map<ProdutoGetDTO>(await _repository.GetById(id));
         }
 
-        public async Task<Produto> Update(int id, Produto entity)
+        public async Task<ProdutoGetDTO> Update(int id, ProdutoPutDTO entity)
         {
             var produtoDb = await _repository.GetById(id);
             if (produtoDb != null)
             {
-                return await _repository.Update(entity);
+                produtoDb.EstoqueMin = entity.EstoqueMin;
+                produtoDb.Observacao = entity.Observacao;
+                produtoDb.QtdEmbalagem = entity.QtdEmbalagem;
+
+                return mapper.Map<ProdutoGetDTO>(await _repository.Update(produtoDb));
 
             }
-
-            return produtoDb;
+            return null;
         }
     }
 }

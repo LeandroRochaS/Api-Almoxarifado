@@ -1,13 +1,14 @@
 ﻿using AlmoxarifadoAPI.Extensions;
 using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.DTO;
+using AlmoxarifadoServices.Implementations;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AlmoxarifadoAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class ItemRequisicaoController : ControllerBase
     {
@@ -24,12 +25,15 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRequisicoes()
+        public async Task<IActionResult> GetRequisicoes(int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var requisicoes = await _itemService.GetAll();
-                return Ok(new ResultViewModel<IEnumerable<ItemRequisicaoGetDTO>>(requisicoes));
+
+                var paginatedItens = requisicoes.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+                return Ok(new ResultViewModel<IEnumerable<ItemRequisicaoGetDTO>>(paginatedItens));
             }
             catch (Exception ex)
             {

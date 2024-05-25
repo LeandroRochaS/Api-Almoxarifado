@@ -42,9 +42,16 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
 
         public async Task<NotaFiscal> Delete(NotaFiscal entity)
         {
-            _context.NotaFiscals.Remove(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+            try
+            {
+                _context.NotaFiscals.Remove(entity);
+                await _context.SaveChangesAsync();
+                return entity;
+            } catch
+            {
+                throw new DbUpdateException("Hà Itens vinculados a nota fiscal");
+            }
+          
         }
 
         public async Task<IEnumerable<NotaFiscal>> GetAll() => await _context.NotaFiscals.ToListAsync();

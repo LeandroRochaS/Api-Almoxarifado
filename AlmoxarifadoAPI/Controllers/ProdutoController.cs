@@ -26,11 +26,11 @@ namespace AlmoxarifadoAPI.Controllers
                 var pagedProdutos = produtos.Skip((pageNumber - 1) * pageSize)
                                             .Take(pageSize)
                                             .ToList();
-                return Ok(new ResultViewModel<List<Produto>>(pagedProdutos));
+                return Ok(new ResultViewModel<List<ProdutoGetDTO>>(pagedProdutos));
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return StatusCode(500, new ResultViewModel<List<Produto>>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
+                return StatusCode(500, new ResultViewModel<string>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
             }
         }
 
@@ -42,9 +42,9 @@ namespace AlmoxarifadoAPI.Controllers
                 var produto = await _produtoService.GetById(id);
                 if (produto == null)
                 {
-                    return NotFound(new ResultViewModel<Produto>("Nenhum produto encontrado com este ID."));
+                    return NotFound(new ResultViewModel<string>("Nenhum produto encontrado com este ID."));
                 }
-                return Ok(new ResultViewModel<Produto>(produto));
+                return Ok(new ResultViewModel<ProdutoGetDTO>(produto));
             }
             catch (Exception)
             {
@@ -60,30 +60,30 @@ namespace AlmoxarifadoAPI.Controllers
 
             try
             {
-                var produtoSalvo = await _produtoService.CreateV2(produto);
-                return Created($"/v1/produtos/{produtoSalvo.IdPro}", new ResultViewModel<Produto>(produtoSalvo));
+                var produtoSalvo = await _produtoService.Create(produto);
+                return Created($"/v1/produtos/{produtoSalvo.IdPro}", new ResultViewModel<ProdutoGetDTO>(produtoSalvo));
             }
             catch (Exception)
             {
-                return StatusCode(500, new ResultViewModel<Produto>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
+                return StatusCode(500, new ResultViewModel<string>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
             }
         }
 
         [HttpPut("produtos/{id}")]
-        public async Task<IActionResult> AtualizarProduto(int id, Produto produto)
+        public async Task<IActionResult> AtualizarProduto(int id, ProdutoPutDTO produto)
         {
             try
             {
                 var produtoAtualizado = await _produtoService.Update(id, produto);
                 if (produtoAtualizado == null)
                 {
-                    return NotFound(new ResultViewModel<Produto>("Nenhum produto encontrado com este ID."));
+                    return NotFound(new ResultViewModel<string>("Nenhum produto encontrado com este ID."));
                 }
-                return Ok(new ResultViewModel<Produto>(produtoAtualizado));
+                return Ok(new ResultViewModel<ProdutoGetDTO>(produtoAtualizado));
             }
             catch (Exception)
             {
-                return StatusCode(500, new ResultViewModel<Produto>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
+                return StatusCode(500, new ResultViewModel<string>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
             }
         }
 
@@ -97,7 +97,7 @@ namespace AlmoxarifadoAPI.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, new ResultViewModel<Produto>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
+                return StatusCode(500, new ResultViewModel<string>("Ocorreu um erro ao acessar os dados. Por favor, tente novamente mais tarde."));
             }
         }
     }

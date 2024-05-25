@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace AlmoxarifadoAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class ItemNotaFiscalController : ControllerBase
     {

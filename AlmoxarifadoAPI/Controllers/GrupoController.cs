@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AlmoxarifadoAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class GrupoController : ControllerBase
     {
         private readonly IGrupoService _grupoService;

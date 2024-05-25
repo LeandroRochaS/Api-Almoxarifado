@@ -3,9 +3,13 @@ using AlmoxarifadoServices.DTO;
 
 namespace AlmoxarifadoServices.Interfaces
 {
-    public interface IProdutoService : IServiceBase<Produto>
+    public interface IProdutoService 
     {
+        Task<IEnumerable<ProdutoGetDTO>> GetAll(); 
+        Task<ProdutoGetDTO> Create(ProdutoPostDTO entity);
+        Task<ProdutoGetDTO> Update(int id, ProdutoPutDTO entity);
+        Task<ProdutoGetDTO> Delete(int id);
+        Task<ProdutoGetDTO> GetById(int id);
 
-        Task<Produto> CreateV2(ProdutoPostDTO entity);
     }
 }

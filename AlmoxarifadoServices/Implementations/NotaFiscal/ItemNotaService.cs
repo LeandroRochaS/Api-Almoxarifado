@@ -147,7 +147,7 @@ namespace AlmoxarifadoServices.Implementations
             return await _secretariaService.GetById(id);
         }
 
-        private async Task<Produto> ObterProdutoPorId(int id)
+        private async Task<ProdutoGetDTO> ObterProdutoPorId(int id)
         {
             return await _produtoService.GetById(id);
         }

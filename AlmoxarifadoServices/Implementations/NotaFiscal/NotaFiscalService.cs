@@ -30,9 +30,6 @@ namespace AlmoxarifadoServices.Implementations
             {
                 cfg.CreateMap<NotaFiscal, NotaFiscalGetDTO>();
                 cfg.CreateMap<NotaFiscalGetDTO, NotaFiscal>();
-                cfg.CreateMap<IEnumerable<NotaFiscal>, IEnumerable<NotaFiscalGetDTO>>();
-
-
             });
             _mapper = configurationMapper.CreateMapper();
         }

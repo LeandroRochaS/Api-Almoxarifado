@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AlmoxarifadoAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class RequisicaoController : ControllerBase
     {
@@ -24,12 +24,13 @@ namespace AlmoxarifadoAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRequisicoes()
+        public async Task<IActionResult> GetRequisicoes(int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var requisicoes = await _requisicaoService.GetAll();
-                return Ok(new ResultViewModel<IEnumerable<RequisicaoGetDTO>>(requisicoes));
+                var paginatedRequisicoes = requisicoes.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+                return Ok(new ResultViewModel<IEnumerable<RequisicaoGetDTO>>(paginatedRequisicoes));
             }
             catch (Exception ex)
             {

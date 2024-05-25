@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AlmoxarifadoAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("v1/[controller]")]
     [ApiController]
     public class NotaFiscalController : ControllerBase
     {
@@ -24,12 +24,13 @@ namespace AlmoxarifadoAPI.Controllers
 
         // GET: api/NotaFiscal
         [HttpGet]
-        public async Task<IActionResult> GetNotasFiscais()
+        public async Task<IActionResult> GetNotasFiscais(int pageNumber = 1, int pageSize = 10)
         {
             try
             {
                 var notasFiscais = await _notaFiscalService.GetAll();
-                return Ok(new ResultViewModel<IEnumerable<NotaFiscalGetDTO>>(notasFiscais));
+                var paginatedNotasFiscais = notasFiscais.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+                return Ok(new ResultViewModel<IEnumerable<NotaFiscalGetDTO>>(paginatedNotasFiscais));
             }
             catch (Exception ex)
             {

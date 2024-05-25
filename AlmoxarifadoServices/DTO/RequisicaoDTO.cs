@@ -12,13 +12,12 @@
 
     public class RequisicaoGetDTO
     {
-        public int Id { get; set; }
-        public int IdCli { get; set; }
-        public int Ano { get; set; }
-        public int Mes { get; set; }
         public int IdReq { get; set; }
         public int IdSec { get; set; }
         public int IdSet { get; set; }
+        public int IdCli { get; set; }
+        public int Ano { get; set; }
+        public int Mes { get; set; }
         public string? Observacao { get; set; }
         public DateTime DataReq { get; set; }
         public decimal TotalReq { get; set; }
