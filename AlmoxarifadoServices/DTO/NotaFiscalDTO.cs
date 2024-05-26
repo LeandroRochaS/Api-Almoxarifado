@@ -38,7 +38,7 @@
 
     public class NotaFiscalComItensGetDTO
     {
-        public NotaFiscalPostDTO NotaFiscal { get; set; }
-        public List<ItemNotaFiscalPostDTO> Itens { get; set; }
+        public NotaFiscalGetDTO NotaFiscal { get; set; }
+        public List<ItemNotaFiscalGetDTO> Itens { get; set; }
     }
 }

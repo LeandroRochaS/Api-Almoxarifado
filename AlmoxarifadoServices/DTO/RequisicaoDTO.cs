@@ -41,7 +41,7 @@
 
     public class RequisicaoComItensGetDTO
     {
-        public RequisicaoPostDTO Requisicao { get; set; }
-        public List<ItemRequisicaoPostDTO> Itens { get; set; }
+        public RequisicaoGetDTO Requisicao { get; set; }
+        public List<ItemRequisicaoGetDTO> Itens { get; set; }
     }
 }

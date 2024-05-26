@@ -25,24 +25,28 @@ namespace AlmoxarifadoServices.Implementations
             {
                 try
                 {
+
+                    var listItens = new List<ItemNotaFiscalGetDTO>();
+
                     foreach (ItemNotaFiscalPostDTO item in itens)
                     {
-                        await _itemNotaService.Create(notaFiscal.IdNota, item);
+                        listItens.Add(await _itemNotaService.Create(notaFiscal.IdNota, item));
                     }
 
                     var notaFiscalGet = new NotaFiscalComItensGetDTO
                     {
-                        NotaFiscal = new NotaFiscalPostDTO
+                        NotaFiscal = new NotaFiscalGetDTO
                         {
-                            IdTipoNota = notaFiscal.IdTipoNota,
+                            IdNota = notaFiscal.IdNota,
                             IdFor = (int)notaFiscal.IdFor,
                             IdSec = notaFiscal.IdSec,
                             QtdItem = notaFiscal.QtdItem,
+                            IdTipoNota = notaFiscal.IdTipoNota,
                             Ano = notaFiscal.Ano,
                             Mes = notaFiscal.Mes,
                             NumNota = notaFiscal.NumNota,
                         },
-                        Itens = itens
+                        Itens = listItens
                     };
 
                     scope.Complete(); 

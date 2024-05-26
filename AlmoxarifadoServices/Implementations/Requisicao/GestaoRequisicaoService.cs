@@ -27,6 +27,8 @@ namespace AlmoxarifadoServices.Implementations
                         throw new ArgumentException("A lista de itens está vazia ou nula.");
                     }
 
+                    var listReturn = new List<ItemRequisicaoGetDTO>();
+
                     foreach (ItemRequisicaoPostDTO item in itens)
                     {
                         if (item == null)
@@ -34,13 +36,14 @@ namespace AlmoxarifadoServices.Implementations
                             throw new ArgumentException("Um ou mais itens na lista de itens são nulos.");
                         }
 
-                        await _itemRequisicaoService.Create(model.IdReq, item);
+                        listReturn.Add(await _itemRequisicaoService.Create(model.IdReq, item));
                     }
 
                     var requisicaoGet = new RequisicaoComItensGetDTO
                     {
-                        Requisicao = new RequisicaoPostDTO
+                        Requisicao = new RequisicaoGetDTO
                         {
+                            IdReq = model.IdReq,
                             IdSec = model.IdSec,
                             IdCli = model.IdCli,
                             IdSet = (int)model.IdSet,
@@ -48,7 +51,7 @@ namespace AlmoxarifadoServices.Implementations
                             Mes = model.Mes,
                             Observacao = model.Observacao,
                         },
-                        Itens = itens
+                        Itens = listReturn
                     };
 
                     scope.Complete();
