@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AlmoxarifadoAPI.Models;
-using AlmoxarifadoDomain.Models;
+﻿using System.Transactions;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
-using AlmoxarifadoServices.ViewModels.ItemRequisicao;
-
 namespace AlmoxarifadoServices.Implementations
 {
     public class GestaoRequisicaoService : IGestaoRequisicaoService
@@ -14,50 +8,62 @@ namespace AlmoxarifadoServices.Implementations
         private readonly IItemRequisicaoService _itemRequisicaoService;
 
         public GestaoRequisicaoService(
-            IItemRequisicaoService itemRequisicaoService,
-            IRequisicaoService requisicaoService,
-            ISetorService setorService,
-            IClienteService clienteService,
-            ISecretariaService secretariaService,
-            IProdutoService produtoService,
-            IEstoqueService estoqueService
+            IItemRequisicaoService itemRequisicaoService
         )
         {
             _itemRequisicaoService = itemRequisicaoService;
         }
-
         public async Task<RequisicaoComItensGetDTO> CriarItens(
             List<ItemRequisicaoPostDTO> itens,
             RequisicaoGetDTO model
         )
         {
-            try
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                foreach (ItemRequisicaoPostDTO item in itens)
+                try
                 {
-                    await _itemRequisicaoService.Create(model.IdReq, item);
-                }
-
-                var requisicaoGet = new RequisicaoComItensGetDTO
-                {
-                    Requisicao = new RequisicaoPostDTO
+                    if (itens == null || !itens.Any())
                     {
-                        IdSec = model.IdSec,
-                        IdCli = model.IdCli,
-                        IdSet = (int)model.IdSet,
-                        Ano = model.Ano,
-                        Mes = model.Mes,
-                        Observacao = model.Observacao,
-                    },
-                    Itens = itens
-                };
+                        throw new ArgumentException("A lista de itens está vazia ou nula.");
+                    }
 
-                return requisicaoGet;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                    foreach (ItemRequisicaoPostDTO item in itens)
+                    {
+                        if (item == null)
+                        {
+                            throw new ArgumentException("Um ou mais itens na lista de itens são nulos.");
+                        }
+
+                        await _itemRequisicaoService.Create(model.IdReq, item);
+                    }
+
+                    var requisicaoGet = new RequisicaoComItensGetDTO
+                    {
+                        Requisicao = new RequisicaoPostDTO
+                        {
+                            IdSec = model.IdSec,
+                            IdCli = model.IdCli,
+                            IdSet = (int)model.IdSet,
+                            Ano = model.Ano,
+                            Mes = model.Mes,
+                            Observacao = model.Observacao,
+                        },
+                        Itens = itens
+                    };
+
+                    scope.Complete();
+                    return requisicaoGet;
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new ArgumentException($"Erro ao criar itens: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Erro ao criar itens: {ex.Message}");
+                }
             }
         }
+
     }
 }

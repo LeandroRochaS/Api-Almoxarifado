@@ -3,6 +3,8 @@ using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
+using NuGet.Protocol.Core.Types;
+using System.Transactions;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -37,24 +39,67 @@ namespace AlmoxarifadoServices.Implementations
 
         public async Task<RequisicaoGetDTO> Create(RequisicaoPostDTO requisicaoView)
         {
-            try
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (await VerificarRelacionamentosRequisicao(requisicaoView))
+                try
                 {
-                    var requisicao = _mapper.Map<Requisicao>(requisicaoView);
-                    requisicao.DataReq = DateTime.Now;
-                    requisicao.TotalReq = 0;
-                    requisicao.QtdIten = 0;
+                    if (await VerificarRelacionamentosRequisicao(requisicaoView))
+                    {
+                        var requisicao = _mapper.Map<Requisicao>(requisicaoView);
+                        requisicao.DataReq = DateTime.Now;
+                        requisicao.TotalReq = 0;
+                        requisicao.QtdIten = 0;
 
-                    var result = await _requisicaoRepository.Create(requisicao);
-                    return _mapper.Map<RequisicaoGetDTO>(result);
+                        var result = await _requisicaoRepository.Create(requisicao);
+                        scope.Complete();
+                        return _mapper.Map<RequisicaoGetDTO>(result);
+                    }
                 }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error ao tentar criar a requisição, verifique os dados.");
+                }
+                return null;
             }
-            catch (Exception ex)
+        }
+        public async Task<RequisicaoGetDTO> AtualizarTotalReq(int idReq)
+        {
+            var reqCItems = await _requisicaoRepository.GetByIdWithItens(idReq);
+            if (reqCItems == null)
+                throw new ArgumentException("Requisição não encontrada.");
+
+            decimal total = 0.0m;
+            foreach (ItensReq item in reqCItems.ItensReqs)
             {
-                throw ex;
+                total += (decimal)item.TotalItem;
             }
-            return null;
+
+            reqCItems.TotalReq = total;
+            return _mapper.Map<RequisicaoGetDTO>(await _requisicaoRepository.Update(reqCItems));
+        }
+
+        public async Task<RequisicaoGetDTO> AdicionarItem(int idReq)
+        {
+            var reqFiscalExistente = await _requisicaoRepository.GetById(idReq);
+            if (reqFiscalExistente == null)
+            {
+                throw new ArgumentException("Requisição não encontrada.");
+            }
+            reqFiscalExistente.QtdIten += 1;
+            var reqResult = await _requisicaoRepository.Update(reqFiscalExistente);
+            return _mapper.Map<RequisicaoGetDTO>(reqResult);
+        }
+
+        public async Task<RequisicaoGetDTO> RemoverItem(int idReq)
+        {
+            var reqFiscalExistente = await _requisicaoRepository.GetById(idReq);
+            if (reqFiscalExistente == null)
+            {
+                throw new ArgumentException("Requisição não encontrada.");
+            }
+            reqFiscalExistente.QtdIten -= 1;
+            var notaResult = await _requisicaoRepository.Update(reqFiscalExistente);
+            return _mapper.Map<RequisicaoGetDTO>(notaResult);
         }
 
         public async Task<RequisicaoGetDTO> Delete(int id)
@@ -81,7 +126,7 @@ namespace AlmoxarifadoServices.Implementations
             return _mapper.Map<RequisicaoGetDTO>(requisicao);
         }
 
-        public async Task<RequisicaoGetDTO> Update(int id, RequisicaoPostDTO requisicaoView)
+        public async Task<RequisicaoGetDTO> Update(int id, RequisicaoPutDTO requisicaoDto)
         {
             var requisicao = await _requisicaoRepository.GetById(id);
             if (requisicao == null)
@@ -89,7 +134,10 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Requisição não encontrada.");
             }
 
-            _mapper.Map(requisicaoView, requisicao);
+            requisicao.TotalReq = requisicaoDto.TotalReq;
+            requisicao.QtdIten = requisicaoDto.QtdIten;
+            requisicao.Observacao = requisicaoDto.Observacao;
+
             var updatedRequisicao = await _requisicaoRepository.Update(requisicao);
             return _mapper.Map<RequisicaoGetDTO>(updatedRequisicao);
         }

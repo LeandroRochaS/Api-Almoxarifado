@@ -2,8 +2,11 @@ using AlmoxarifadoInfrastructure.Data;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoInfrastructure.Data.Repositories;
 using AlmoxarifadoServices.Implementations;
+using AlmoxarifadoServices.Implementations.EstoqueStrategy;
 using AlmoxarifadoServices.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,9 +30,22 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder
-    .Services.AddControllersWithViews()
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "1.0",
+        Title = "Almoxarifado API",
+        Description = "API para gerenciamento de almoxarifado",
+        Contact = new OpenApiContact
+        {
+            Name = "Leandro Rocha Santos",
+            Email = "lerocha644@gmail.com",
+            Url = new Uri("https://github.com/LeandroRochaS"),
+        }
+    });
+});
+builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft
             .Json
@@ -40,11 +56,12 @@ builder
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Almoxarifado API v1");
+});
 
 app.UseHttpsRedirection();
 

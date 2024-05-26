@@ -1,68 +1,59 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
+using System.Transactions;
 
 namespace AlmoxarifadoServices.Implementations
 {
     public class GestaoNotaFiscalService : IGestaoNotaFiscalService
     {
-        private readonly IFornecedorService _fornecedorService;
-        private readonly ISecretariaService _secretariaService;
-        private readonly INotaFiscalService _notaFiscalService;
-        private readonly IProdutoService _produtoService;
         private readonly IItemNotaService _itemNotaService;
-        private readonly IEstoqueService _estoqueService;
 
         public GestaoNotaFiscalService(
-            IFornecedorService fornecedorService,
-            ISecretariaService secretariaService,
-            INotaFiscalService notaFiscalService,
-            IItemNotaService itemNotaService,
-            IProdutoService produtoService,
-            IEstoqueService estoqueService
+            IItemNotaService itemNotaService
         )
         {
-            _fornecedorService = fornecedorService;
-            _secretariaService = secretariaService;
-            _notaFiscalService = notaFiscalService;
             _itemNotaService = itemNotaService;
-            _produtoService = produtoService;
-            _estoqueService = estoqueService;
         }
 
         public async Task<NotaFiscalComItensGetDTO> CriarItens(
-            List<ItemNotaFiscalPostDTO> itens,
-            NotaFiscal notaFiscal
-        )
+        List<ItemNotaFiscalPostDTO> itens,
+        NotaFiscal notaFiscal
+            )
         {
-            try
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                foreach (ItemNotaFiscalPostDTO item in itens)
+                try
                 {
-                    await _itemNotaService.Create(notaFiscal.IdNota, item);
-                }
-
-                var notaFiscalGet = new NotaFiscalComItensGetDTO
-                {
-                    NotaFiscal = new NotaFiscalPostDTO
+                    foreach (ItemNotaFiscalPostDTO item in itens)
                     {
-                        IdTipoNota = notaFiscal.IdTipoNota,
-                        IdFor = (int)notaFiscal.IdFor,
-                        IdSec = notaFiscal.IdSec,
-                        QtdItem = notaFiscal.QtdItem,
-                        Ano = notaFiscal.Ano,
-                        Mes = notaFiscal.Mes,
-                        NumNota = notaFiscal.NumNota,
-                    },
-                    Itens = itens
-                };
+                        await _itemNotaService.Create(notaFiscal.IdNota, item);
+                    }
 
-                return notaFiscalGet;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Erro ao criar itens da nota fiscal.", ex);
+                    var notaFiscalGet = new NotaFiscalComItensGetDTO
+                    {
+                        NotaFiscal = new NotaFiscalPostDTO
+                        {
+                            IdTipoNota = notaFiscal.IdTipoNota,
+                            IdFor = (int)notaFiscal.IdFor,
+                            IdSec = notaFiscal.IdSec,
+                            QtdItem = notaFiscal.QtdItem,
+                            Ano = notaFiscal.Ano,
+                            Mes = notaFiscal.Mes,
+                            NumNota = notaFiscal.NumNota,
+                        },
+                        Itens = itens
+                    };
+
+                    scope.Complete(); 
+                    return notaFiscalGet;
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Erro ao criar itens da nota fiscal.", ex);
+                }
             }
         }
+
     }
 }

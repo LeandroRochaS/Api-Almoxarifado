@@ -9,6 +9,6 @@ namespace AlmoxarifadoInfrastructure.Data.Interfaces
 {
     public interface INotaFiscalRepository : IRepositoryBase<NotaFiscal>
     {
-        Task<NotaFiscal> AtualizarValorDaNota(NotaFiscal notaFiscald);
+        Task<NotaFiscal> GetByIdWithItens(int notaFiscald);
     }
 }

@@ -21,13 +21,11 @@ namespace AlmoxarifadoAPI.Models
 
         public void RemoverEstoque(decimal quantidade)
         {
-            // Lógica para atualizar o estoque do produto
             QtdPro -= quantidade;
         }
 
         public void AdicionarEstoque(decimal quantidade)
         {
-            // Lógica para atualizar o estoque do produto
             QtdPro += quantidade;
         }
     }

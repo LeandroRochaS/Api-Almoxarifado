@@ -88,7 +88,7 @@ namespace AlmoxarifadoAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRequisicao(
             int id,
-            [FromBody] RequisicaoPostDTO requisicao
+            [FromBody] RequisicaoPutDTO requisicao
         )
         {
             if (!ModelState.IsValid)

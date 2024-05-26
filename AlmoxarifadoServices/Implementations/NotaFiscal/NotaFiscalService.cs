@@ -3,8 +3,7 @@ using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
-using System.Collections;
-using System.Collections.Generic;
+using System.Transactions;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -30,33 +29,55 @@ namespace AlmoxarifadoServices.Implementations
             {
                 cfg.CreateMap<NotaFiscal, NotaFiscalGetDTO>();
                 cfg.CreateMap<NotaFiscalGetDTO, NotaFiscal>();
+                cfg.CreateMap<NotaFiscalPostDTO, NotaFiscal>();
             });
             _mapper = configurationMapper.CreateMapper();
         }
 
         public async Task<NotaFiscal> Create(NotaFiscalPostDTO notaFiscalView)
         {
-            try
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                await VerificarRelacionamentosNotaFiscal(notaFiscalView);
+                try
+                {
+                    await VerificarRelacionamentosNotaFiscal(notaFiscalView);
 
-                var notaFiscalT = CriarNotaFiscal(notaFiscalView);
+                    var notaFiscalT = _mapper.Map<NotaFiscal>(notaFiscalView);
 
-                var notaFiscalResult = await _repository.Create(notaFiscalT);
-                return notaFiscalResult;
-            }
-            catch (Exception ex)
-            {
-                // Logar a exceção ou tratar conforme necessário
-                throw ex;
+                    var notaFiscalResult = await _repository.Create(notaFiscalT);
+                    scope.Complete(); 
+                    return notaFiscalResult;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Erro ao tentar criar nota fiscal: {ex.Message}", ex);
+                }
             }
         }
+
 
         public async Task<NotaFiscalGetDTO> GetById(int id)
         {
             var nota = await _repository.GetById(id);
             return _mapper.Map<NotaFiscalGetDTO>(nota);
         }
+
+        public async Task<NotaFiscalGetDTO> AtualizarValorTotal(int idNota)
+        {
+            var notaCItems = await _repository.GetByIdWithItens(idNota);
+            if(notaCItems == null)
+                throw new ArgumentException("Nota fiscal não encontrada.");
+
+            decimal total = 0.0m;
+            foreach (ItensNotum item in notaCItems.ItensNota)
+            {
+                total += (decimal)item.TotalItem;
+            }
+
+            notaCItems.ValorNota = total;
+            return  _mapper.Map<NotaFiscalGetDTO>(await _repository.Update(notaCItems));
+        }
+
 
         public async Task<NotaFiscalGetDTO> AdicionarItem(NotaFiscal notaFiscal)
         {
@@ -66,6 +87,18 @@ namespace AlmoxarifadoServices.Implementations
                 throw new ArgumentException("Nota fiscal não encontrada.");
             }
             notaFiscal.QtdItem += 1;
+            var notaResult = await _repository.Update(notaFiscal);
+            return _mapper.Map<NotaFiscalGetDTO>(notaResult);
+        }
+
+        public async Task<NotaFiscalGetDTO> RemoverItem(NotaFiscal notaFiscal)
+        {
+            var notaFiscalExistente = await _repository.GetById(notaFiscal.IdNota);
+            if (notaFiscalExistente == null)
+            {
+                throw new ArgumentException("Nota fiscal não encontrada.");
+            }
+            notaFiscal.QtdItem -= 1;
             var notaResult = await _repository.Update(notaFiscal);
             return _mapper.Map<NotaFiscalGetDTO>(notaResult);
         }
@@ -111,25 +144,6 @@ namespace AlmoxarifadoServices.Implementations
             return true;
         }
 
-        private NotaFiscal CriarNotaFiscal(NotaFiscalPostDTO notaFiscalView)
-        {
-            return new NotaFiscal
-            {
-                Ano = notaFiscalView.Ano,
-                DataNota = DateTime.Now,
-                EmpenhoNum = 0,
-                Icms = 0,
-                IdFor = notaFiscalView.IdFor,
-                IdSec = notaFiscalView.IdSec,
-                Iss = 0,
-                Mes = notaFiscalView.Mes,
-                IdTipoNota = notaFiscalView.IdTipoNota,
-                ObservacaoNota = notaFiscalView.ObservacaoNota,
-                QtdItem = notaFiscalView.QtdItem,
-                NumNota = notaFiscalView.NumNota,
-                ValorNota = 0
-            };
-        }
 
         private async Task<Fornecedor> ObterFornecedorPorId(int id)
         {

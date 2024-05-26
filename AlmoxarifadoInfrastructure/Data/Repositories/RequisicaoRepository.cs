@@ -53,5 +53,9 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             await _context.SaveChangesAsync();
             return entity;
         }
+        public async Task<Requisicao> GetByIdWithItens(int idReq)
+        {
+            return await _context.Requisicaos.Include(x => x.ItensReqs).FirstOrDefaultAsync(x => x.IdReq == idReq);
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace AlmoxarifadoInfrastructure.Data.Interfaces
 {
     public interface IRequisicaoRepository : IRepositoryBase<Requisicao>
     {
+        Task<Requisicao> GetByIdWithItens(int idReq);
     }
 }

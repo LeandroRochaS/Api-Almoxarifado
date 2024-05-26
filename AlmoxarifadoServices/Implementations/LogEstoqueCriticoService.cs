@@ -8,17 +8,21 @@ namespace AlmoxarifadoServices.Implementations
     {
         public static void CriarLogCSV(LogEstoqueMinimo logEstoque)
         {
-            // Criação do arquivo CSV
-            var dataString = logEstoque.DataRegistro.ToString().Replace("/", "-").Replace("/", "-").Replace(":", "-").Replace(":", "-").Trim();
-            string path = @$"C:\Users\Leandro\Documents\Códigos\Senai\Api-Almoxarifado\Logs\produtosAbaixoMinimoE_{dataString}_{logEstoque.IdRequisicao}.csv";
-            using (StreamWriter sw = new StreamWriter(path))
+            string folderPath = "Logs"; 
+
+            if (!Directory.Exists(folderPath))
             {
-                // Cabeçalho
+                Directory.CreateDirectory(folderPath);
+            }
+
+            var dataString = logEstoque.DataRegistro.ToString("yyyy-MM-dd_HH-mm-ss");
+            string filePath = Path.Combine(folderPath, $"produtosAbaixoMinimoE_{dataString}_{logEstoque.IdRequisicao}.csv");
+
+            using (StreamWriter sw = new StreamWriter(filePath))
+            {
                 sw.WriteLine("IdProduto;IdSecretaria;IdRequisicao;QuantidadeAtual;DataRegistro");
 
-              
-                    sw.WriteLine($"{logEstoque.IdProduto};{logEstoque.IdSecretaria};{logEstoque.IdRequisicao};{logEstoque.QuantidadeAtual};{logEstoque.DataRegistro}");
-                
+                sw.WriteLine($"{logEstoque.IdProduto};{logEstoque.IdSecretaria};{logEstoque.IdRequisicao};{logEstoque.QuantidadeAtual};{logEstoque.DataRegistro}");
             }
         }
     }

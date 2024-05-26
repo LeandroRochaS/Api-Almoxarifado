@@ -4,7 +4,7 @@ using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Transactions;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -20,7 +20,6 @@ namespace AlmoxarifadoServices.Implementations
 
         public ItemRequisicaoService(
             IItemRequisicaoRepository itemRequisicaoRepository,
-            IMapper mapper,
             IRequisicaoService requisicaoService,
             IProdutoService produtoService,
             IEstoqueService estoqueService,
@@ -32,6 +31,7 @@ namespace AlmoxarifadoServices.Implementations
             {
                 cfg.CreateMap<ItensReq, ItemRequisicaoGetDTO>();
                 cfg.CreateMap<ItemRequisicaoGetDTO, ItensReq>();
+                cfg.CreateMap<ProdutoGetDTO, Produto>();
             });
             _mapper = configurationMapper.CreateMapper();
             _requisicaoService = requisicaoService;
@@ -45,53 +45,62 @@ namespace AlmoxarifadoServices.Implementations
             ItemRequisicaoPostDTO itemRequisicaoView
         )
         {
-            try
-            {
-                if (
-                    await ExisteRequisicao(id)
-                    && await VerificarRelacionamentosItemReq(id, itemRequisicaoView)
-                )
-                {
-                    decimal totalItem = itemRequisicaoView.QtdPro * itemRequisicaoView.PreUnit;
-                    var itemRequisicao = CriarItemRequisicao(id, itemRequisicaoView, totalItem);
 
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
                     if (
-                        await _estoqueService.VerificarEstoqueSuficiente(
-                            itemRequisicao.IdPro,
-                            itemRequisicao.IdSec,
-                            itemRequisicao.QtdPro
-                        )
+                        await ExisteRequisicao(id)
+                        && await VerificarRelacionamentosItemReq(id, itemRequisicaoView)
                     )
                     {
-                        var resultItem = await _itemRequisicaoRepository.Create(itemRequisicao);
-                        if (resultItem != null)
+                        decimal totalItem = itemRequisicaoView.QtdPro * itemRequisicaoView.PreUnit;
+                        var itemRequisicao = CriarItemRequisicao(id, itemRequisicaoView, totalItem);
+
+                        if (
+                            await _estoqueService.VerificarEstoqueSuficiente(
+                                itemRequisicao.IdPro,
+                                itemRequisicao.IdSec,
+                                itemRequisicao.QtdPro
+                            )
+                        )
                         {
-                            await AtualizarEstoque(
-                                itemRequisicao.IdPro,
-                                itemRequisicao.IdSec,
-                                itemRequisicaoView.QtdPro
+                            var resultItem = await _itemRequisicaoRepository.Create(itemRequisicao);
+                            if (resultItem != null)
+                            {
+                                await AtualizarEstoque(
+                                    itemRequisicao.IdPro,
+                                    itemRequisicao.IdSec,
+                                    itemRequisicaoView.QtdPro
+                                );
+                                await VerificarEstoqueMinimo(
+                                    itemRequisicao.IdPro,
+                                    itemRequisicao.IdSec,
+                                    itemRequisicao.IdReq
+                                );
+                                await _requisicaoService.AdicionarItem(itemRequisicao.IdReq);
+                                await _requisicaoService.AtualizarTotalReq(itemRequisicao.IdReq);
+                                scope.Complete();
+                                return _mapper.Map<ItemRequisicaoGetDTO>(resultItem);
+                            }
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException(
+                                "Quantidade de produto em estoque insuficiente"
                             );
-                            await VerificarEstoqueMinimo(
-                                itemRequisicao.IdPro,
-                                itemRequisicao.IdSec,
-                                itemRequisicao.IdReq
-                            );
-                            return _mapper.Map<ItemRequisicaoGetDTO>(resultItem);
                         }
                     }
-                    else
-                    {
-                        throw new InvalidOperationException(
-                            "Quantidade de produto em estoque insuficiente"
-                        );
-                    }
                 }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+              
+                return null;
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return null;
+
         }
 
         public async Task<ItemRequisicaoGetDTO> Delete(KeyItemRequisicaoDTO keys)
@@ -101,9 +110,10 @@ namespace AlmoxarifadoServices.Implementations
             {
                 throw new ArgumentException("Item de requisição não encontrado.");
             }
-            return _mapper.Map<ItemRequisicaoGetDTO>(
-            await _itemRequisicaoRepository.Delete(itemRequisicao)
-            );
+            var result = await _itemRequisicaoRepository.Delete(itemRequisicao);
+            await _requisicaoService.AtualizarTotalReq(itemRequisicao.IdReq);
+            await _requisicaoService.RemoverItem(itemRequisicao.IdReq);
+            return _mapper.Map<ItemRequisicaoGetDTO>(result);
         }
 
         public async Task<IEnumerable<ItemRequisicaoGetDTO>> GetAll()
@@ -125,15 +135,16 @@ namespace AlmoxarifadoServices.Implementations
             {
                 throw new ArgumentException("Item de requisição não encontrado.");
             }
+
             itemRequisicao.QtdPro = entity.QtdPro;
-            itemRequisicao.TotalItem = entity.QtdPro * itemRequisicao.PreUnit;
-            itemRequisicao.TotalReal = entity.QtdPro * itemRequisicao.PreUnit;
+            itemRequisicao.PreUnit = entity.PreUnit ?? itemRequisicao.PreUnit;
+            itemRequisicao.TotalItem = itemRequisicao.QtdPro * (itemRequisicao.PreUnit ?? 0);
+            itemRequisicao.TotalReal = itemRequisicao.QtdPro * (itemRequisicao.PreUnit ?? 0);
+
             var result = await _itemRequisicaoRepository.Update(itemRequisicao);
-            if (result == 1)
-                return _mapper.Map<ItemRequisicaoGetDTO>(itemRequisicao);
-            return null;
+            return _mapper.Map<ItemRequisicaoGetDTO>(itemRequisicao);
         }
-            
+
         private async Task VerificarEstoqueMinimo(int idPro, int idSec, int idReq)
         {
             var produto = _mapper.Map<Produto>(await _produtoService.GetById(idPro));
@@ -192,7 +203,7 @@ namespace AlmoxarifadoServices.Implementations
 
         private async Task AtualizarEstoque(int IdPro, int IdSec, decimal quantidadeSaida)
         {
-            await _estoqueService.RemoverEstoque(IdPro, IdSec, quantidadeSaida);
+            await _estoqueService.AtualizarEstoque(IdPro, IdSec, quantidadeSaida, false);
         }
 
      

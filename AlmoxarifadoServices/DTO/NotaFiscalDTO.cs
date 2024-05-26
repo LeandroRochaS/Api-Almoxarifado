@@ -13,6 +13,7 @@
         public int IdSec { get; set; }
         public string NumNota { get; set; } = null!;
         public int QtdItem { get; set; }
+        public decimal ValorNota { get; set; }
         public int Ano { get; set; }
         public int? Mes { get; set; }
         public int IdTipoNota { get; set; }

@@ -20,6 +20,7 @@ namespace AlmoxarifadoServices.Implementations
             {
                 cfg.CreateMap<ProdutoPostDTO, Produto>();
                 cfg.CreateMap<Produto, ProdutoPutDTO>();
+                cfg.CreateMap<ProdutoGetDTO, Produto>();
                 cfg.CreateMap<Produto, ProdutoGetDTO>();
             });
             mapper = configurationMapper.CreateMapper();

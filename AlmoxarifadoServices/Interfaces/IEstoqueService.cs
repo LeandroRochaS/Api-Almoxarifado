@@ -9,14 +9,13 @@ namespace AlmoxarifadoServices.Interfaces
         Task<Estoque> Delete(int id, int idSec);
         Task<IEnumerable<Estoque>> GetAll();
         Task<Estoque> GetById(int id, int idSec);
-        Task<Estoque> Update(int id, Estoque entity);
-        Task<Estoque> AdicionarEstoque(int id, int idSec, decimal quantidade);
-        Task<Estoque> RemoverEstoque(int id, int idSec, decimal quantidade);
-
+        Task<Estoque> Update(Estoque entity);
         Task<bool> VerificarEstoqueSuficiente(
                             int IdPro,
                             int IdSec,
                             decimal QtdPro);
+        Task AtualizarEstoque(int id, int idSec, decimal quantidade, bool adicionar);
+
 
     }
 }

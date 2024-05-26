@@ -1,10 +1,9 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
-using AlmoxarifadoInfrastructure.Data.Repositories;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
-using System.Collections.Generic;
+using System.Transactions;
 
 namespace AlmoxarifadoServices.Implementations
 {
@@ -46,49 +45,64 @@ namespace AlmoxarifadoServices.Implementations
         }
 
         public async Task<ItemNotaFiscalGetDTO> Create(
-            int idNotaFiscal,
-            ItemNotaFiscalPostDTO itemFiscal
-        )
+                int idNotaFiscal,
+             ItemNotaFiscalPostDTO itemFiscal
+                )
+        {
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                try
+                {
+                    var notaFiscal = await ObterNotaFiscalPorId(idNotaFiscal);
+                    if (notaFiscal != null)
+                    {
+                        await VerificarRelacionamentosItem(itemFiscal);
+
+                        var item = CriarItemNotaFiscal(itemFiscal, idNotaFiscal);
+
+                        var resultItem = await _repository.Create(item);
+                        if (resultItem != null)
+                        {
+                            await AtualizarEstoque(
+                                itemFiscal.IdPro,
+                                itemFiscal.IdSec,
+                                itemFiscal.QtdPro
+                            );
+                            await _notaFiscalService.AdicionarItem(notaFiscal);
+                            await _notaFiscalService.AtualizarValorTotal(notaFiscal.IdNota);
+                            scope.Complete(); 
+                            return _mapper.Map<ItemNotaFiscalGetDTO>(resultItem);
+                        }
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Erro ao criar item da nota fiscal.", ex);
+                }
+            }
+        }
+
+
+        public async Task<ItemNotaFiscalGetDTO> Delete(KeyItemNotaDTO keys)
         {
             try
             {
-                var notaFiscal = await ObterNotaFiscalPorId(idNotaFiscal);
-                if (notaFiscal != null)
+                var item = await _repository.GetById(keys.NumItem, keys.IdProduto, keys.IdNota, keys.IdSecretaria);
+                if (item != null)
                 {
-                    await VerificarRelacionamentosItem(itemFiscal);
-
-                    var item = CriarItemNotaFiscal(itemFiscal, idNotaFiscal);
-
-                    var resultItem = await _repository.Create(item);
-                    if (resultItem != null)
-                    {
-                        await AtualizarEstoque(
-                            itemFiscal.IdPro,
-                            itemFiscal.IdSec,
-                            itemFiscal.QtdPro
-                        );
-                        await _notaFiscalService.AdicionarItem(notaFiscal);
-                        return _mapper.Map<ItemNotaFiscalGetDTO>(resultItem);
-                    }
+                    var itemResult = await _repository.Delete(item);
+                    await _notaFiscalService.RemoverItem(await ObterNotaFiscalPorId(item.IdNota));
+                    await _notaFiscalService.AtualizarValorTotal(item.IdNota);
+                    return _mapper.Map<ItemNotaFiscalGetDTO>(itemResult);
                 }
                 return null;
             }
             catch (Exception ex)
             {
-                // Logar a exceção ou tratar conforme necessário
-                throw ex;
+                throw new Exception($"Erro ao tentar deletar item nota {ex.Message}");
             }
-        }
 
-        public async Task<ItemNotaFiscalGetDTO> Delete(KeyItemNotaDTO keys)
-        {
-            var item = await _repository.GetById(keys.NumItem, keys.IdProduto, keys.IdNota, keys.IdSecretaria);
-            if (item != null)
-            {
-                var itemResult = await _repository.Delete(item);
-                return _mapper.Map<ItemNotaFiscalGetDTO>(itemResult);
-            }
-            return null;
         }
 
         public async Task<IEnumerable<ItemNotaFiscalGetDTO>> GetAll()
@@ -108,9 +122,11 @@ namespace AlmoxarifadoServices.Implementations
             var ItemNota = await _repository.GetById(keys.NumItem, keys.IdProduto, keys.IdNota, keys.IdSecretaria);
             if (ItemNota == null)
                 return null;
+
             ItemNota.PreUnit = entity.PreUnit;
             ItemNota.QtdPro = entity.QtdPro;
             ItemNota.TotalItem = entity.QtdPro * entity.PreUnit;
+
             var result = await _repository.Update(ItemNota);
             if(result == 1)
                 return _mapper.Map<ItemNotaFiscalGetDTO>(ItemNota);
@@ -169,7 +185,7 @@ namespace AlmoxarifadoServices.Implementations
 
         private async Task AtualizarEstoque(int IdPro, int IdSec, decimal quantidadeSaida)
         {
-            await _estoqueService.AdicionarEstoque(IdPro, IdSec, quantidadeSaida);
+            await _estoqueService.AtualizarEstoque(IdPro, IdSec, quantidadeSaida, true);
         }
     }
 }

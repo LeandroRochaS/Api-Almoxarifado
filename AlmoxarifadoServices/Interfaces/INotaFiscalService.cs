@@ -15,5 +15,10 @@ namespace AlmoxarifadoServices.Interfaces
         Task<NotaFiscalGetDTO> Update(int id, NotaFiscalPutDTO notaFiscal);
 
         Task<NotaFiscalGetDTO> AdicionarItem(NotaFiscal notaFiscal);
+
+        Task<NotaFiscalGetDTO> RemoverItem(NotaFiscal notaFiscal);
+        Task<NotaFiscalGetDTO> AtualizarValorTotal(int idNota);
+
+
     }
 }

@@ -23,5 +23,8 @@
     public class ItemRequisicaoPutDTO
     {
         public decimal QtdPro { get; set; }
+        public decimal? PreUnit { get; set; }
+        public decimal? TotalItem { get; set; }
+        public decimal? TotalReal { get; set; }
     }
 }

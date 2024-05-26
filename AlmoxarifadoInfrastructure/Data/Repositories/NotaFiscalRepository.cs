@@ -1,11 +1,6 @@
 ﻿using AlmoxarifadoAPI.Models;
 using AlmoxarifadoInfrastructure.Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlmoxarifadoInfrastructure.Data.Repositories
 {
@@ -19,18 +14,9 @@ namespace AlmoxarifadoInfrastructure.Data.Repositories
             _context = pContext;
         }
 
-        public async Task<NotaFiscal> AtualizarValorDaNota(NotaFiscal notaFiscald)
+        public async Task<NotaFiscal> GetByIdWithItens(int notaFiscalId)
         {
-            decimal? total = 0;
-            NotaFiscal notaFiscal = await _context.NotaFiscals.Include(x => x.ItensNota).FirstOrDefaultAsync(x => x.IdNota == notaFiscald.IdNota);
-            var listItens = notaFiscal.ItensNota;
-            foreach(ItensNotum item in listItens)
-            {
-                total += item.TotalItem;
-            }
-
-            notaFiscal.ValorNota = (decimal)total;
-            return await Update(notaFiscal);
+            return await _context.NotaFiscals.Include(x => x.ItensNota).FirstOrDefaultAsync(x => x.IdNota == notaFiscalId);           
         }
 
         public async Task<NotaFiscal> Create(NotaFiscal entity)
