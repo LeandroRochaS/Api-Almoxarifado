@@ -2,7 +2,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace AlmoxarifadoInfrastructure.Data
 {
@@ -12,7 +11,7 @@ namespace AlmoxarifadoInfrastructure.Data
         private readonly ILogger<DbConnectionService> _logger;
         private readonly string[] _connectionStrings;
         private string _cachedConnectionString;
-        private const int TimeoutInSeconds = 2; // Timeout reduzido
+        private const int TimeoutInSeconds = 2; 
 
         public DbConnectionService(IConfiguration configuration, ILogger<DbConnectionService> logger)
         {
@@ -27,27 +26,31 @@ namespace AlmoxarifadoInfrastructure.Data
 
         public string GetConnectionString()
         {
-            // Primeiro tenta usar a conexão em cache
             if (!string.IsNullOrEmpty(_cachedConnectionString))
             {
+                _logger.LogInformation($"Tentando conexão em cache: {_cachedConnectionString}");
                 if (TryOpenConnection(_cachedConnectionString, out string validConnection))
                 {
                     return validConnection;
                 }
                 else
                 {
+                    _logger.LogWarning($"Conexão em cache falhou: {_cachedConnectionString}");
                     _cachedConnectionString = null;
                 }
             }
 
             foreach (var connStr in _connectionStrings)
             {
+                _logger.LogInformation($"Tentando conectar com: {connStr}");
                 if (TryOpenConnection(connStr, out string validConnection))
                 {
                     _cachedConnectionString = validConnection;
                     return validConnection;
                 }
             }
+
+            _logger.LogError("Nenhuma conexão de banco de dados disponível.");
             throw new Exception("Nenhuma conexão de banco de dados disponível.");
         }
 

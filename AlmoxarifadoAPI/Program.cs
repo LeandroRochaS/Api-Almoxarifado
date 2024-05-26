@@ -13,13 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddSingleton<IDbConnectionService, DbConnectionService>();
-builder.Services.AddDbContext<xAlmoxarifadoContext>(
-    async (service, options) =>
-    {
-        var dbConnection = service.GetRequiredService<IDbConnectionService>();
-        options.UseSqlServer(dbConnection.GetConnectionString());
-    }
-);
+builder.Services.AddDbContext<xAlmoxarifadoContext>((serviceProvider, options) =>
+{
+    var dbConnectionService = serviceProvider.GetRequiredService<IDbConnectionService>();
+    options.UseSqlServer(dbConnectionService.GetConnectionString());
+});
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 //Carregando Classes de Repositories
