@@ -68,7 +68,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Run("https://localhost:8080");
 
 void ServicesDependencies(IServiceCollection services)
 {

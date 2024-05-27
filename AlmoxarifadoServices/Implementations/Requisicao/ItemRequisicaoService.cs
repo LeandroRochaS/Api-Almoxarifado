@@ -4,6 +4,7 @@ using AlmoxarifadoInfrastructure.Data.Interfaces;
 using AlmoxarifadoServices.DTO;
 using AlmoxarifadoServices.Interfaces;
 using AutoMapper;
+using SeuProjeto.Services.Implementations;
 using System.Transactions;
 
 namespace AlmoxarifadoServices.Implementations
@@ -83,6 +84,10 @@ namespace AlmoxarifadoServices.Implementations
                                 await _requisicaoService.AtualizarTotalReq(itemRequisicao.IdReq);
                                 scope.Complete();
                                 return _mapper.Map<ItemRequisicaoGetDTO>(resultItem);
+                            }  
+                            else
+                            {
+                                throw new InvalidOperationException("Error ao tentar criar o item, verifique os dados e tente novamente.");
                             }
                         }
                         else
@@ -151,7 +156,7 @@ namespace AlmoxarifadoServices.Implementations
             var estoqueProduto = await _estoqueService.GetById(idPro, idSec);
             if (produto.VerificarEstoqueMinimo(estoqueProduto.QtdPro))
             {
-                LogEstoqueCriticoService.CriarLogCSV(
+                LogEstoqueCriticoService.CriarOuAtualizarLogCSV(
                     new LogEstoqueMinimo
                     {
                         IdProduto = idPro,
