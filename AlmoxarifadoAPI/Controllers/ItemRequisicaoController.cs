@@ -85,15 +85,14 @@ namespace AlmoxarifadoAPI.Controllers
             {
                 var newRequisicao = await _itemService.Create(id, requisicao);
                 return CreatedAtAction(
-                    nameof(GetRequisicao),
-                    new { id = newRequisicao.IdReq },
-                    new ResultViewModel<ItemRequisicaoGetDTO>(newRequisicao)
-                );
+                           nameof(PostRequisicao),
+                           new { id = newRequisicao.IdReq },
+                           newRequisicao
+                       );
             }
             catch (Exception ex)
             {
-                return StatusCode(
-                    StatusCodes.Status500InternalServerError,
+                return BadRequest(
                     new ResultViewModel<string>(ex.Message)
                 );
             }
@@ -107,7 +106,7 @@ namespace AlmoxarifadoAPI.Controllers
         )
         {
             if (!ModelState.IsValid)
-                return BadRequest(new ResultViewModel<Requisicao>(ModelState.GetErrors()));
+                return BadRequest(new ResultViewModel<ItensReq>(ModelState.GetErrors()));
             try
             {
                 var updatedRequisicao = await _itemService.Update(new KeyItemRequisicaoDTO
